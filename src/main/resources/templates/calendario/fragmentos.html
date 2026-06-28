@@ -1,0 +1,209 @@
+<section th:fragment="header-pagina">
+    <!-- ENCABEZADO DE PÁGINA -->
+    <div class="page-header">
+        <h1>Calendario BLCM</h1>
+        <p>Calendario de la Banda Lírica Cantonal de Moravia</p>
+    </div>
+</section>
+
+<section th:fragment="contenido">
+    <!-- CONTENIDO -->
+    <div class="container my-5 principal">
+
+        <!-- Leyenda -->
+        <div class="leyenda mb-4">
+            <div class="leyenda-item">
+                <span class="dot dot-presentacion"></span> Presentación
+            </div>
+            <div class="leyenda-item">
+                <span class="dot dot-competencia"></span> Competencia
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Calendario -->
+            <div class="col-lg-7">
+                <div class="cal-card">
+                    <div class="cal-nav">
+                        <button id="btnPrev" aria-label="Mes anterior">&#8249;</button>
+                        <span class="cal-mes" id="calMes"></span>
+                        <button id="btnNext" aria-label="Mes siguiente">&#8250;</button>
+                    </div>
+                    <div class="cal-grid" id="calGrid"></div>
+                </div>
+            </div>
+
+            <!-- Eventos -->
+            <div class="col-lg-5">
+                <h5 class="seccion-titulo-cal mb-3">Próximos eventos</h5>
+                <div class="slider-lista" id="sliderLista"></div>
+                <div class="slider-nav" id="sliderNav" style="display:none;">
+                    <button class="slider-btn" id="sliderPrev" aria-label="Anterior">&#8249;</button>
+                    <span class="slider-contador" id="sliderContador"></span>
+                    <button class="slider-btn" id="sliderNext" aria-label="Siguiente">&#8250;</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+<th:block th:fragment="scripts">
+    <script>
+        const eventos = [];
+
+        const DIAS  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+        const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                       'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+        let viewDate = new Date();
+
+        function eventosDelDia(year, month, day) {
+            const key = new Date(year, month, day);
+            return eventos.filter(e => {
+                const inicio = new Date(e.fecha + 'T00:00:00');
+                const fin = e.fechaFin ? new Date(e.fechaFin + 'T00:00:00') : inicio;
+                return key >= inicio && key <= fin;
+            });
+        }
+
+        function renderCalendario() {
+            const year = viewDate.getFullYear();
+            const month = viewDate.getMonth();
+            const hoy = new Date();
+            document.getElementById('calMes').textContent = `${MESES[month]} ${year}`;
+            const grid = document.getElementById('calGrid');
+            grid.innerHTML = '';
+
+            DIAS.forEach(d => {
+                const el = document.createElement('div');
+                el.className = 'cal-dia-nombre';
+                el.textContent = d;
+                grid.appendChild(el);
+            });
+
+            const primerDia = new Date(year, month, 1).getDay();
+            const totalDias = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < primerDia; i++) {
+                const el = document.createElement('div');
+                el.className = 'cal-dia vacio';
+                grid.appendChild(el);
+            }
+
+            for (let d = 1; d <= totalDias; d++) {
+                const evs = eventosDelDia(year, month, d);
+                const esHoy = (d === hoy.getDate() && month === hoy.getMonth() && year === hoy.getFullYear());
+                const el = document.createElement('div');
+                el.className = 'cal-dia' + (esHoy ? ' hoy' : '') + (evs.length ? ' tiene-evento' : '');
+
+                const numEl = document.createElement('div');
+                numEl.className = 'num';
+                numEl.textContent = d;
+                el.appendChild(numEl);
+
+                if (evs.length) {
+                    const dotsEl = document.createElement('div');
+                    dotsEl.className = 'eventos-dia';
+                    evs.forEach(ev => {
+                        const dot = document.createElement('span');
+                        dot.className = `badge-evento ${ev.tipo === 'presentacion' ? 'dot-presentacion' : 'dot-competencia'}`;
+                        dotsEl.appendChild(dot);
+                    });
+                    el.appendChild(dotsEl);
+                    el.setAttribute('data-bs-toggle', 'tooltip');
+                    el.setAttribute('data-bs-placement', 'top');
+                    el.setAttribute('title', evs.map(e => e.titulo).join(' / '));
+                }
+
+                grid.appendChild(el);
+            }
+
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+                new bootstrap.Tooltip(el, { trigger: 'hover' });
+            });
+        }
+
+        let sliderIdx = 0;
+        let proximosCache = [];
+        const VISIBLE = 3;
+
+        function buildFechaDisplay(ev) {
+            const inicio = new Date(ev.fecha + 'T00:00:00');
+            if (ev.fechaFin) {
+                const fin = new Date(ev.fechaFin + 'T00:00:00');
+                return `<div class="dia-num" style="font-size:1.1rem;">${inicio.getDate()}—${fin.getDate()}</div>
+                        <div class="mes-txt">${MESES[fin.getMonth()].substring(0, 3).toUpperCase()}</div>`;
+            }
+            return `<div class="dia-num">${inicio.getDate()}</div>
+                    <div class="mes-txt">${MESES[inicio.getMonth()].substring(0, 3).toUpperCase()}</div>`;
+        }
+
+        function renderSlider() {
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            proximosCache = eventos
+                .filter(e => {
+                    const fin = e.fechaFin
+                        ? new Date(e.fechaFin + 'T00:00:00')
+                        : new Date(e.fecha + 'T00:00:00');
+                    return fin >= hoy;
+                })
+                .sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            sliderIdx = 0;
+            actualizarSlider();
+        }
+
+        function actualizarSlider() {
+            const lista = document.getElementById('sliderLista');
+            const nav = document.getElementById('sliderNav');
+            const total = proximosCache.length;
+            const totalPaginas = Math.ceil(total / VISIBLE);
+            lista.innerHTML = '';
+
+            if (!total) {
+                lista.innerHTML = '<p class="text-muted">No hay eventos próximos.</p>';
+                nav.style.display = 'none';
+                return;
+            }
+
+            const desde = sliderIdx * VISIBLE;
+            const hasta = Math.min(desde + VISIBLE, total);
+            proximosCache.slice(desde, hasta).forEach(ev => {
+                const label = ev.tipo === 'presentacion' ? 'Presentación' : 'Competencia';
+                const item = document.createElement('div');
+                item.className = 'evento-item';
+                item.innerHTML = `
+                    <div class="evento-fecha-bloque ${ev.tipo}">${buildFechaDisplay(ev)}</div>
+                    <div class="evento-info">
+                        <span class="evento-tipo-badge badge-${ev.tipo}">${label}</span>
+                        <h6>${ev.titulo}</h6>
+                        <p><i class="fa-solid fa-location-dot me-1"></i>${ev.lugar}</p>
+                    </div>`;
+                lista.appendChild(item);
+            });
+
+            nav.style.display = total > VISIBLE ? 'flex' : 'none';
+            document.getElementById('sliderContador').textContent = `${sliderIdx + 1} / ${totalPaginas}`;
+            document.getElementById('sliderPrev').disabled = sliderIdx === 0;
+            document.getElementById('sliderNext').disabled = sliderIdx === totalPaginas - 1;
+        }
+
+        document.getElementById('sliderPrev').addEventListener('click', () => { sliderIdx--; actualizarSlider(); });
+        document.getElementById('sliderNext').addEventListener('click', () => { sliderIdx++; actualizarSlider(); });
+
+        document.getElementById('btnPrev').addEventListener('click', () => {
+            viewDate.setMonth(viewDate.getMonth() - 1);
+            renderCalendario();
+        });
+
+        document.getElementById('btnNext').addEventListener('click', () => {
+            viewDate.setMonth(viewDate.getMonth() + 1);
+            renderCalendario();
+        });
+
+        renderCalendario();
+        renderSlider();
+    </script>
+</th:block>

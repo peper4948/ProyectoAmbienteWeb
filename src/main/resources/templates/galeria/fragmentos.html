@@ -1,0 +1,202 @@
+<!-- ENCABEZADO DE PÁGINA -->
+<section th:fragment="header-pagina">
+    <div class="page-header">
+        <h1>Galería</h1>
+        <p>Momentos y recuerdos de la Banda Lírica Cantonal de Moravia</p>
+    </div>
+</section>
+
+<!-- CONTENIDO -->
+<section th:fragment="contenido">
+    <div class="container my-5 principal">
+
+        <!-- Filtros -->
+        <div class="filtros">
+            <button class="btn-filtro activo" data-filtro="todos">
+                <i class="fa-solid fa-border-all me-1"></i> Todos
+            </button>
+            <button class="btn-filtro" data-filtro="desfile">
+                <i class="fa-solid fa-flag me-1"></i> Desfiles
+            </button>
+            <button class="btn-filtro" data-filtro="presentacion">
+                <i class="fa-solid fa-music me-1"></i> Presentaciones
+            </button>
+            <button class="btn-filtro" data-filtro="competencia">
+                <i class="fa-solid fa-trophy me-1"></i> Competencias
+            </button>
+            <button class="btn-filtro" data-filtro="ensayo">
+                <i class="fa-solid fa-drum me-1"></i> Ensayos
+            </button>
+        </div>
+
+        <!-- Grid -->
+        <div class="galeria-grid" id="galeriaGrid"></div>
+
+        <!-- Sin resultados -->
+        <div class="sin-resultados" id="sinResultados">
+            <i class="fa-solid fa-image"></i>
+            No hay fotos en esta categoría aún.
+        </div>
+
+    </div>
+</section>
+
+<!-- LIGHTBOX -->
+<section th:fragment="lightbox">
+    <div class="modal fade" id="lightbox" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="lightboxTitulo">Foto</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Se muestra la imagen si existe, o el placeholder -->
+                    <img id="lightboxImg" src="" alt="" style="display:none;">
+                    <div id="lightboxPlaceholder">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Foto próximamente</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span id="lightboxDesc"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<th:block th:fragment="scripts">
+    <script>
+        /* ============================================================
+         DATOS DE FOTOS
+         Cuando tengas las fotos, agrega la ruta en "src".
+         Si "src" está vacío se muestra el placeholder automáticamente.
+     
+         categoria: 'desfile' | 'presentacion' | 'competencia' | 'ensayo'
+         altura: 'corta' | 'media' | 'alta'  (para variar el grid)
+         ============================================================ */
+        const fotos = [
+            {src: '', titulo: 'Desfile del 15 de setiembre', categoria: 'desfile', altura: 'media', desc: 'Moravia, 2025'},
+            {src: '', titulo: 'Festival de la luz', categoria: 'presentacion', altura: 'alta', desc: 'San José, 2025'},
+            {src: '', titulo: 'WAMSB 2025', categoria: 'competencia', altura: 'corta', desc: 'Alajuela, 2025'},
+            {src: '', titulo: 'Ensayo general', categoria: 'ensayo', altura: 'media', desc: 'Sede BLCM, 2025'},
+            {src: '', titulo: 'Guatemala', categoria: 'desfile', altura: 'alta', desc: 'Moravia, 2024'},
+            {src: '', titulo: 'Presentación navideña', categoria: 'presentacion', altura: 'corta', desc: 'Teatro Nacional, 2024'},
+            {src: '', titulo: 'WAMSB 2024', categoria: 'competencia', altura: 'media', desc: 'Cartago, 2024'},
+            {src: '', titulo: 'Ensayo de percusión', categoria: 'ensayo', altura: 'corta', desc: 'Sede BLCM, 2024'},
+            {src: '', titulo: 'Desfile de Moravia', categoria: 'desfile', altura: 'media', desc: 'Moravia, 2024'},
+            {src: '', titulo: 'Aniversario #2 BLCM', categoria: 'presentacion', altura: 'alta', desc: 'BLCM, 2024'},
+            {src: '', titulo: 'wamsb color guard indoor', categoria: 'competencia', altura: 'corta', desc: 'La Fortuna, 2024'},
+            {src: '', titulo: 'wamsb cadencias', categoria: 'competencia', altura: 'corta', desc: 'La Fortuna, 2024'},
+            {src: '', titulo: 'Ensayo liras', categoria: 'ensayo', altura: 'media', desc: 'Sede BLCM, 2025'},
+        ];
+
+        /* ── Gradientes placeholder por categoría ── */
+        const gradientes = {
+            desfile: 'linear-gradient(135deg, rgba(138,20,255,0.75), rgba(80,0,180,0.85))',
+            presentacion: 'linear-gradient(135deg, rgba(0,188,212,0.75), rgba(0,120,160,0.85))',
+            competencia: 'linear-gradient(135deg, rgba(255,152,0,0.75), rgba(200,80,0,0.85))',
+            ensayo: 'linear-gradient(135deg, rgba(76,175,80,0.75), rgba(30,120,40,0.85))',
+        };
+
+        /* ── Alturas para el grid masonry ── */
+        const alturas = {corta: '180px', media: '240px', alta: '310px'};
+
+        /* ── Labels de categoría ── */
+        const labels = {
+            desfile: 'Desfile',
+            presentacion: 'Presentación',
+            competencia: 'Competencia',
+            ensayo: 'Ensayo',
+        };
+
+        let filtroActivo = 'todos';
+
+        function renderGaleria() {
+            const grid = document.getElementById('galeriaGrid');
+            const sinRes = document.getElementById('sinResultados');
+            grid.innerHTML = '';
+
+            const filtradas = filtroActivo === 'todos'
+                    ? fotos
+                    : fotos.filter(f => f.categoria === filtroActivo);
+
+            if (!filtradas.length) {
+                sinRes.style.display = 'block';
+                return;
+            }
+            sinRes.style.display = 'none';
+
+            filtradas.forEach((foto, idx) => {
+                const item = document.createElement('div');
+                item.className = 'galeria-item';
+                item.dataset.idx = fotos.indexOf(foto);
+
+                const h = alturas[foto.altura] || '240px';
+
+                if (foto.src) {
+                    // Imagen real
+                    item.innerHTML = `
+                            <img src="${foto.src}" alt="${foto.titulo}"
+                                 class="foto-placeholder" style="height:${h};">
+                            <div class="galeria-overlay">
+                                <i class="fa-solid fa-magnifying-glass-plus icono-zoom"></i>
+                                <span class="badge-categoria badge-${foto.categoria}">${labels[foto.categoria]}</span>
+                                <h6>${foto.titulo}</h6>
+                                <span>${foto.desc}</span>
+                            </div>`;
+                } else {
+                    // Placeholder
+                    item.innerHTML = `
+                            <div class="placeholder-img" style="height:${h}; background:${gradientes[foto.categoria]};">
+                                <i class="fa-solid fa-image"></i>
+                                <span>${foto.titulo}</span>
+                            </div>
+                            <div class="galeria-overlay">
+                                <i class="fa-solid fa-magnifying-glass-plus icono-zoom"></i>
+                                <span class="badge-categoria badge-${foto.categoria}">${labels[foto.categoria]}</span>
+                                <h6>${foto.titulo}</h6>
+                                <span>${foto.desc}</span>
+                            </div>`;
+                }
+
+                item.addEventListener('click', () => abrirLightbox(fotos.indexOf(foto)));
+                grid.appendChild(item);
+            });
+        }
+
+        function abrirLightbox(idx) {
+            const foto = fotos[idx];
+            const img = document.getElementById('lightboxImg');
+            const ph = document.getElementById('lightboxPlaceholder');
+
+            document.getElementById('lightboxTitulo').textContent = foto.titulo;
+            document.getElementById('lightboxDesc').textContent = foto.desc;
+
+            if (foto.src) {
+                img.src = foto.src;
+                img.alt = foto.titulo;
+                img.style.display = 'block';
+                ph.style.display = 'none';
+            } else {
+                img.style.display = 'none';
+                ph.style.display = 'flex';
+                ph.style.background = gradientes[foto.categoria];
+            }
+
+            new bootstrap.Modal(document.getElementById('lightbox')).show();
+        }
+
+        /* ── Filtros ── */
+        document.querySelectorAll('.btn-filtro').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.btn-filtro').forEach(b => b.classList.remove('activo'));
+                btn.classList.add('activo');
+                filtroActivo = btn.dataset.filtro;
+                renderGaleria();
+            });
+        });
+
+        renderGaleria();
+    </script>
+</th:block>

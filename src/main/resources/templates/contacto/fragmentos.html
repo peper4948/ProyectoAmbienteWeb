@@ -1,0 +1,196 @@
+<!-- ENCABEZADO DE PÁGINA -->
+<section th:fragment="header-pagina">
+    <div class="page-header">
+        <h1>Contáctanos</h1>
+        <p>¿Tienes alguna consulta? Escríbenos y te respondemos pronto</p>
+    </div>
+</section>
+
+<!-- CONTENIDO -->
+<section th:fragment="contenido">
+    <div class="container my-5 principal">
+        <div class="row g-4 align-items-start">
+
+            <!-- Formulario -->
+            <div class="col-lg-7">
+                <div class="contacto-card">
+                    <h5 class="form-titulo"><i class="fa-solid fa-paper-plane me-2" style="color:rgba(138,20,255,1);"></i>Envíanos un mensaje</h5>
+                    <form id="formContacto" novalidate>
+
+                        <div class="row g-3">
+                            <!-- Nombre -->
+                            <div class="col-sm-6">
+                                <label for="nombre" class="form-label">Nombre completo *</label>
+                                <input type="text" id="nombre" name="nombre" class="form-control"
+                                       placeholder="Tu nombre" required>
+                                <div class="invalid-feedback">Por favor ingresa tu nombre.</div>
+                            </div>
+
+                            <!-- Correo -->
+                            <div class="col-sm-6">
+                                <label for="correo" class="form-label">Correo electrónico *</label>
+                                <input type="email" id="correo" name="correo" class="form-control"
+                                       placeholder="correo@ejemplo.com" required>
+                                <div class="invalid-feedback">Ingresa un correo válido.</div>
+                            </div>
+
+                            <!-- Asunto -->
+                            <div class="col-12">
+                                <label for="asunto" class="form-label">Asunto *</label>
+                                <select id="asunto" name="asunto" class="form-select" required>
+                                    <option value="" disabled selected>Selecciona un asunto</option>
+                                    <option value="Información general">Información general</option>
+                                    <option value="Audiciones">Audiciones</option>
+                                    <option value="Presentaciones y eventos">Presentaciones y eventos</option>
+                                    <option value="Patrocinio o colaboración">Patrocinio o colaboración</option>
+                                    <option value="Prensa y medios">Prensa y medios</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                                <div class="invalid-feedback">Selecciona un asunto.</div>
+                            </div>
+
+                            <!-- Mensaje -->
+                            <div class="col-12">
+                                <label for="mensaje" class="form-label">Mensaje *</label>
+                                <textarea id="mensaje" name="mensaje" class="form-control"
+                                          placeholder="Escribe tu mensaje aquí..." required></textarea>
+                                <div class="invalid-feedback">Por favor escribe tu mensaje.</div>
+                            </div>
+
+                            <!-- Botón -->
+                            <div class="col-12 mt-2">
+                                <button type="submit" class="btn-enviar" id="btnEnviar">
+                                    <i class="fa-solid fa-paper-plane me-2"></i>Enviar mensaje
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info de contacto -->
+            <div class="col-lg-5">
+                <div class="info-card">
+                    <h5 class="info-titulo"><i class="fa-solid fa-circle-info me-2" style="color:rgba(138,20,255,1);"></i>Información</h5>
+
+                    <div class="info-item">
+                        <div class="info-icono">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div class="info-texto">
+                            <strong>Ubicación</strong>
+                            <span>Moravia, San José, Costa Rica</span>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icono">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div class="info-texto">
+                            <strong>Correo</strong>
+                            <a href="mailto:blcm@correo.com">blcm@correo.com</a>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icono">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div class="info-texto">
+                            <strong>Horario de respuesta</strong>
+                            <span>Lunes a viernes, 8:00 am – 5:00 pm</span>
+                        </div>
+                    </div>
+
+                    <hr style="border-color: rgba(0,0,0,0.10); margin: 1.2rem 0;">
+
+                    <p class="redes-titulo">Síguenos en redes sociales</p>
+                    <div class="redes-btns">
+                        <a class="red-btn red-ig" href="https://www.instagram.com/blcm__lirica" target="_blank">
+                            <img th:src="@{/logo/instagram.svg}" height="16"> Instagram
+                        </a>
+                        <a class="red-btn red-fb" href="https://www.facebook.com/profile.php?id=100092644479915&locale=es_LA" target="_blank">
+                            <img th:src="@{/logo/facebook.svg}" height="16"> Facebook
+                        </a>
+                        <a class="red-btn red-tk" href="https://www.tiktok.com/@blcm__lirica?lang=es-419" target="_blank">
+                            <img th:src="@{/logo/tiktok.svg}" height="16"> TikTok
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<th:block th:fragment="scripts">
+    <script>
+            /* ── EmailJS ── */
+            emailjs.init('yVrLR4JA16_G-3zoX'); // Reemplaza con tu Public Key de EmailJS
+
+            document.getElementById('formContacto').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                if (!this.checkValidity()) {
+                    this.classList.add('was-validated');
+                    return;
+                }
+
+                const btn = document.getElementById('btnEnviar');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Enviando...';
+
+                const datos = {
+                    nombre:  document.getElementById('nombre').value.trim(),
+                    correo:  document.getElementById('correo').value.trim(),
+                    asunto:  document.getElementById('asunto').value,
+                    mensaje: document.getElementById('mensaje').value.trim(),
+                };
+
+                // 1. Notificación al admin
+                emailjs.send('service_3s7nkv8', 'template_fk9gflq', {
+                    tipo:        'Nuevo mensaje de contacto',
+                    subtitulo:   datos.asunto,
+                    nombre:      datos.nombre,
+                    apellidos:   '',
+                    correo:      datos.correo,
+                    campo_label: 'Asunto',
+                    campo_valor: datos.asunto,
+                    mensaje:     datos.mensaje,
+                })
+                .then(() => {
+                    // 2. Auto-reply al usuario
+                    return emailjs.send('service_3s7nkv8', 'template_1b3lqc7', {
+                        nombre:  datos.nombre,
+                        correo:  datos.correo,
+                        seccion: '',
+                    });
+                })
+                .then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Mensaje enviado!',
+                        text: 'Te hemos enviado una confirmación a tu correo.',
+                        confirmButtonColor: 'rgba(138,20,255,1)',
+                    });
+                    document.getElementById('formContacto').reset();
+                    document.getElementById('formContacto').classList.remove('was-validated');
+                })
+                .catch((error) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error al enviar',
+                        text: 'Intenta de nuevo más tarde.',
+                        confirmButtonColor: 'rgba(138,20,255,1)',
+                    });
+                    console.error('EmailJS error:', error);
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Enviar mensaje';
+                });
+            });
+    </script>
+</th:block>
