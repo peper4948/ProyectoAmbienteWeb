@@ -40,4 +40,14 @@ public class PaginasController {
         return "audiciones/listado";
     }
 
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
+    @GetMapping("/integrantes/listado")
+    public String integrantes() {
+        return "integrantes/listado";
+    }
+
 }

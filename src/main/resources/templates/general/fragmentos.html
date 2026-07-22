@@ -1,65 +1,79 @@
 <!-- Fragmento #1 que irá en el head de todas las páginas, así se incluye todo lo necesario de configuración-->
-    <head th:fragment="head">
-        <title>TechShop</title>
-        <meta charset="UTF-8"/>
-        <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
-        <link th:href="@{/webjars/font-awesome/css/all.css}" rel="stylesheet"/>
-        
-        <script th:src="@{/js/rutinas.js}"></script>
+<head th:fragment="head">
+    <title>TechShop</title>
+    <meta charset="UTF-8"/>
+    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/webjars/font-awesome/css/all.css}" rel="stylesheet"/>
 
 
-        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
-        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
-        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script> 
-        
-        <link th:href="@{/css/estilos.css}" rel="stylesheet"/>
-        <!--<meta name="_csrf" th:content="${_csrf.token}"/>
-        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>-->
-        
-       <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-        
-        <script th:src="@{/js/config.js}"></script>
-    </head>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script> 
 
-    <header th:fragment="header">
-        <nav class="navbar navbar-expand-lg navbar-blcm">
-            <div class="container-fluid">
-                <a class="navbar-brand blcm-title" th:href="@{/inicio/listado}">BLCM</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+    <link th:href="@{/css/estilos.css}" rel="stylesheet"/>
+    <!--<meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>-->
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <script th:src="@{/js/config.js}"></script>
+</head>
+
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-blcm">
+        <div class="container-fluid">
+            <a class="navbar-brand blcm-title" th:href="@{/inicio/listado}">BLCM</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" th:href="@{/inicio/listado}">Inicio</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/calendario/listado}">Calendario BLCM</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/galeria/listado}">Galería</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/contacto/listado}">Contacto</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/audiciones/listado}">Audiciones</a>
-                        </li>
-                    </ul>
-                </div>
-                <button class="btn-user-icon ms-3" data-bs-toggle="modal" data-bs-target="#modalAuth"
-                    aria-label="Acceder / Registrarse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/inicio/listado}">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/calendario/listado}">Calendario BLCM</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/galeria/listado}">Galería</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/contacto/listado}">Contacto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/audiciones/listado}">Audiciones</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/integrantes/listado}">Integrantes</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="dropdown ms-3">
+                <button class="btn-user-icon ms-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa-solid fa-user"></i>
                 </button>
 
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li sec:authorize="!isAuthenticated()">
+                        <a class="dropdown-item" th:href="@{/login}">Ingresar</a>
+                    </li>
+                    <li sec:authorize="isAuthenticated()">
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="dropdown-item btn btn-link text-decoration-none">Salir</button>
+                        </form>
+                    </li>
+                </ul>
             </div>
-        </nav>
-    </header>
-    
-    
-    
-    
+
+        </div>
+    </nav>
+</header>
+
+
+
+
     <footer th:fragment="footer" class="footer-blcm mt-5">
         <div class="container text-center py-4">
             <div class="footer-brand">BLCM</div>
