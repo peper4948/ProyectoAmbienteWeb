@@ -22,21 +22,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/chat")
+                .ignoringRequestMatchers("/api/chat")
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/img/**", "/api/chat",
-                                "/webjars/**",
-                                "/logo/**",
-                                "/fonts/**",
-                                "/",
-                                "/inicio/listado",
-                                "/calendario/listado",
-                                "/galeria/listado",
-                                "/contacto/listado",
-                                "/audiciones/listado",
-                                "/login"
-                        ).permitAll()
+                .requestMatchers("/css/**", "/js/**", "/img/**", "/api/chat",
+                        "/webjars/**",
+                        "/logo/**",
+                        "/fonts/**",
+                        "/",
+                        "/inicio/listado",
+                        "/calendario/listado",
+                        "/galeria/listado",
+                        "/contacto/listado",
+                        "/audiciones/listado",
+                        "/secciones/**", // <-- agregá esta línea
+                        "/login"
+                ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

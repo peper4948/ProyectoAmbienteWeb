@@ -1579,3 +1579,159 @@ FUENTES
         font-size: 1.5rem;
     }
 }
+
+
+/* ============================================================
+   BLCM - Estilos personalizados (sidebar + identity banner)
+   ============================================================ */
+
+:root {
+    --blcm-cian: #17c3b2;
+    --blcm-cian-osc: #0f9c8e;
+    --blcm-sidebar-bg: #0e0b1a;
+}
+
+/* ---------- Sidebar ---------- */
+.navbar-nav-blcm {
+    background: var(--blcm-sidebar-bg) !important;
+    width: 14rem;
+    min-height: 100vh;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-nav-blcm .sidebar-brand {
+    height: 4.375rem;
+    text-decoration: none;
+    color: #fff;
+    padding: 1.5rem 1rem;
+}
+
+.navbar-nav-blcm .sidebar-brand-text {
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: .05rem;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.navbar-nav-blcm .sidebar-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    margin: .5rem 1rem;
+}
+
+.navbar-nav-blcm .nav-item {
+    list-style: none;
+    position: relative;
+}
+
+.navbar-nav-blcm .nav-item .nav-link {
+    display: block;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 700;
+    padding: .85rem 1rem;
+    text-decoration: none;
+    transition: background .15s ease, color .15s ease;
+}
+
+.navbar-nav-blcm .nav-item .nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Ítem activo con acento cian */
+.navbar-nav-blcm .nav-item.active .nav-link {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    border-left: 4px solid var(--blcm-cian);
+}
+
+/* Botón Salir */
+.navbar-nav-blcm .btn-dark {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-weight: 700;
+    border-radius: .35rem;
+    margin: .5rem 1rem;
+    padding: .5rem 1rem;
+    text-align: center;
+}
+
+.navbar-nav-blcm .btn-dark:hover {
+    background: var(--blcm-cian);
+    border-color: var(--blcm-cian);
+    color: #fff;
+}
+
+/* ---------- Identity banner ---------- */
+.identity-banner {
+    position: relative;
+    width: 100%;
+    background: #0e0b1a;
+    border-radius: .75rem;
+    overflow: hidden;
+    padding: 2.5rem 2rem;
+}
+
+.identity-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(23, 195, 178, 0.10) 0%, rgba(14, 11, 26, 0) 60%);
+    pointer-events: none;
+}
+
+.identity-content {
+    position: relative;
+    z-index: 1;
+}
+
+.identity-content h1 {
+    color: #fff;
+    font-weight: 800;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.identity-lema {
+    color: var(--blcm-cian);
+    font-weight: 600;
+    margin: .25rem 0 0;
+}
+
+/* ---------- Pestañas del panel Director ---------- */
+/* ---------- Pestañas de los paneles (Director y Líder) ---------- */
+#directorTabs,
+#lideresTabs {
+    border-bottom: 2px solid #e3e6f0;
+}
+
+#directorTabs .nav-link,
+#lideresTabs .nav-link {
+    color: #5a5c69;
+    font-weight: 700;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    padding: .75rem 1.25rem;
+}
+
+#directorTabs .nav-link:hover,
+#lideresTabs .nav-link:hover {
+    color: var(--blcm-cian, #17c3b2);
+    border-bottom-color: rgba(23, 195, 178, 0.4);
+}
+
+#directorTabs .nav-link.active,
+#lideresTabs .nav-link.active {
+    color: var(--blcm-cian, #17c3b2);
+    background: transparent;
+    border-bottom: 3px solid var(--blcm-cian, #17c3b2);
+}
+
+#directorTabs .nav-link i,
+#lideresTabs .nav-link i {
+    color: inherit;
+}

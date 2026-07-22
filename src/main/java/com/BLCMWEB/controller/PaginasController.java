@@ -49,5 +49,24 @@ public class PaginasController {
     public String integrantes() {
         return "integrantes/listado";
     }
+    
+    @GetMapping("/secciones/listadoDirector")
+    public String director() {
+        return "secciones/listadoDirector";
+    }
+    
+    @GetMapping("/secciones/listadoLideres")
+    public String lideres() {
+        return "secciones/listadoLideres";
+    }
+    
+        
+    @GetMapping("/secciones/listadoPrincipales")
+    public String principales() {
+        return "secciones/listadoPrincipales";
+    }
+    
+    
+    
 
 }

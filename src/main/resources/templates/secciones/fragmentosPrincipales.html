@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<body>
+
+    <section th:fragment="Page-Wrapper">
+        <div id="wrapper">
+            <ul class="navbar-nav-blcm bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+                <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/inicio/listado}">
+                    <div class="sidebar">
+                        <i class="fas fa-laugh-wink"></i>
+                    </div>
+                    <div class="sidebar-brand-text mx-3">BLCM</div>
+                </a>
+
+                <hr class="sidebar-divider my-0">
+
+                <a href="#" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                    Salir
+                </a>
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/integrantes/listado}">
+                        <i class="fas fa-fw"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                <hr class="sidebar-divider">
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/secciones/listadoDirector}">Director</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/secciones/listadoLideres}">Lideres de Seccion</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="ya casi">Cajas</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="ya casi">Liras</a>
+                </li>
+
+                <li class="nav-item active">
+                    <a class="nav-link" th:href="@{/secciones/listadoPrincipales}">Principales</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="ya casi">Bombos</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="ya casi">Tenores</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="ya casi">Güiros</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="ya casi">Folclore</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="ya casi">Color Guard</a>
+                </li>
+
+                <div class="text-center d-none d-md-inline mt-4">
+                    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+                </div>
+            </ul>
+
+            <div id="content-wrapper" class="d-flex flex-column">
+                <div id="content">
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <div class="identity-banner">
+                            <div class="identity-overlay"></div>
+                            <div class="identity-content">
+                                <h1>Banda Lírica Cantonal de Moravia</h1>
+                                <p class="identity-lema">Sección Principales — Timbales, Bongoes y Congas</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="container-fluid">
+
+                        <!-- Resumen de la sección -->
+                        <div class="row">
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                <div class="card border-left-primary shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total sección</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">9 integrantes</div>
+                                            </div>
+                                            <div class="col-auto"><i class="fas fa-drum fa-2x text-gray-300"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                <div class="card border-left-info shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Timbales</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
+                                            </div>
+                                            <div class="col-auto"><i class="fas fa-drum fa-2x text-gray-300"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                <div class="card border-left-warning shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Bongoes</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
+                                            </div>
+                                            <div class="col-auto"><i class="fas fa-drum fa-2x text-gray-300"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Congas</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
+                                            </div>
+                                            <div class="col-auto"><i class="fas fa-drum fa-2x text-gray-300"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Integrantes por instrumento -->
+                        <div class="row">
+                            <!-- Timbales -->
+                            <div class="col-lg-4 mb-4">
+                                <div class="card shadow h-100">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-drum me-2"></i>Timbales</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                José Pablo Ramírez
+                                                <span class="badge bg-primary">Líder</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Kevin Mora Solano
+                                                <span class="badge bg-success">Activo</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Diana Castro Vega
+                                                <span class="badge bg-success">Activo</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bongoes -->
+                            <div class="col-lg-4 mb-4">
+                                <div class="card shadow h-100">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-drum me-2"></i>Bongoes</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Mariana Solís Camacho
+                                                <span class="badge bg-success">Activo</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Luis Fernández Rojas
+                                                <span class="badge bg-success">Activo</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Sofía Blanco Araya
+                                                <span class="badge bg-warning text-dark">Aspirante</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Congas -->
+                            <div class="col-lg-4 mb-4">
+                                <div class="card shadow h-100">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-drum me-2"></i>Congas</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Andrés Vargas Mora
+                                                <span class="badge bg-success">Activo</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Celeste Jiménez Ureña
+                                                <span class="badge bg-success">Activo</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Marco Solís Pérez
+                                                <span class="badge bg-secondary">Inactivo</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Roster completo -->
+                        <div class="row">
+                            <div class="col-lg-12 mb-4">
+                                <div class="card shadow">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">Roster completo — Principales</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered align-middle" width="100%" cellspacing="0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Cédula</th>
+                                                        <th>Integrante</th>
+                                                        <th>Instrumento</th>
+                                                        <th>Rol</th>
+                                                        <th>Estado</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>1-1234-5678</td>
+                                                        <td>José Pablo Ramírez Fernández</td>
+                                                        <td>Timbales</td>
+                                                        <td><span class="badge bg-primary">Líder</span></td>
+                                                        <td><span class="badge bg-success">Activo</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>2-0111-0222</td>
+                                                        <td>Kevin Mora Solano</td>
+                                                        <td>Timbales</td>
+                                                        <td>Integrante</td>
+                                                        <td><span class="badge bg-success">Activo</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>1-0333-0444</td>
+                                                        <td>Diana Castro Vega</td>
+                                                        <td>Timbales</td>
+                                                        <td>Integrante</td>
+                                                        <td><span class="badge bg-success">Activo</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>2-0456-0789</td>
+                                                        <td>Mariana Solís Camacho</td>
+                                                        <td>Bongoes</td>
+                                                        <td>Integrante</td>
+                                                        <td><span class="badge bg-success">Activo</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>1-0555-0666</td>
+                                                        <td>Luis Fernández Rojas</td>
+                                                        <td>Bongoes</td>
+                                                        <td>Integrante</td>
+                                                        <td><span class="badge bg-success">Activo</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>3-0777-0888</td>
+                                                        <td>Sofía Blanco Araya</td>
+                                                        <td>Bongoes</td>
+                                                        <td>Integrante</td>
+                                                        <td><span class="badge bg-warning text-dark">Aspirante</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>3-0321-0654</td>
+                                                        <td>Andrés Vargas Mora</td>
+                                                        <td>Congas</td>
+                                                        <td>Integrante</td>
+                                                        <td><span class="badge bg-success">Activo</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>1-0987-0543</td>
+                                                        <td>Celeste Jiménez Ureña</td>
+                                                        <td>Congas</td>
+                                                        <td>Integrante</td>
+                                                        <td><span class="badge bg-success">Activo</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>2-0999-0000</td>
+                                                        <td>Marco Solís Pérez</td>
+                                                        <td>Congas</td>
+                                                        <td>Integrante</td>
+                                                        <td><span class="badge bg-secondary">Inactivo</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <small class="form-text text-muted">Datos de ejemplo. Se reemplazan cuando se conecte el backend.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section th:fragment="boton">
+        <a class="scroll-to-top rounded" href="#page-top">
+            <i class="fas fa-angle-up"></i>
+        </a>
+
+        <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">¿Listo para salir?</h5>
+                        <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">Selecciona "Salir" a continuación si estás listo para finalizar tu sesión actual.</div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                        <form th:action="@{/logout}" method="post">
+                            <button class="btn btn-primary" type="submit">Salir</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
