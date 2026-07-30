@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"> 
+    
+    <head>
+        <th:block th:replace="~{general/fragmentos :: head}"></th:block>
+        
+        <!-- ESTILOS VIBE BLCMWEB -->
+        <style>
+            :root {
+                --blcm-violet: #8a14ff;
+                --blcm-cyan: #80fbff;
+                --blcm-ink: #1e1b2e;
+            }
+
+            body {
+                background-color: #f7f7fb;
+                min-height: 100vh;
+                overflow-x: hidden;
+                position: relative;
+            }
+
+            /* Canvas de fondo con blobs animados, muy discretos */
+            #blcm-bg-canvas {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 0;
+                pointer-events: none;
+            }
+
+            .container {
+                position: relative;
+                z-index: 1;
+            }
+
+            .blcm-form-container {
+                background-color: #ffffff;
+                border-radius: 20px;
+                padding: 50px;
+                box-shadow: 0 4px 30px rgba(30, 27, 46, 0.06);
+                margin-top: 50px;
+                margin-bottom: 50px;
+                opacity: 0;
+                transform: translateY(18px);
+                animation: blcmFadeIn 0.6s ease forwards;
+            }
+
+            @keyframes blcmFadeIn {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .blcm-title {
+                text-align: center;
+                font-size: 2rem;
+                font-weight: 600;
+                color: var(--blcm-ink);
+                margin-bottom: 6px;
+            }
+
+            /* Subrayado animado bajo el título, único toque de color fuerte */
+            .blcm-title-underline {
+                width: 46px;
+                height: 4px;
+                margin: 0 auto 22px;
+                border-radius: 4px;
+                background: linear-gradient(90deg, var(--blcm-violet), var(--blcm-cyan));
+                animation: blcmGrow 0.8s ease 0.3s both;
+            }
+
+            @keyframes blcmGrow {
+                from { width: 0; }
+                to { width: 46px; }
+            }
+
+            .blcm-subtitle {
+                text-align: center;
+                color: #8b869c;
+                margin-bottom: 40px;
+                font-size: 1rem;
+            }
+
+            .form-label {
+                font-weight: 600;
+                color: var(--blcm-ink);
+                margin-bottom: 8px;
+                font-size: 0.9rem;
+            }
+
+            .form-control, .form-select {
+                border-radius: 12px;
+                padding: 12px 16px;
+                border: 1.5px solid #e6e5ec;
+                background-color: #fafafc;
+                transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+            }
+
+            .form-control:focus, .form-select:focus {
+                border-color: var(--blcm-violet);
+                background-color: #ffffff;
+                box-shadow: 0 0 0 4px rgba(138, 20, 255, 0.10);
+            }
+
+            .form-control:read-only {
+                background-color: #f1f1f4;
+                color: #a19cb0;
+            }
+
+            /* Solo el campo activo se marca con una barrita cyan a la izquierda */
+            .blcm-field {
+                position: relative;
+                padding-left: 10px;
+                border-left: 3px solid transparent;
+                transition: border-color 0.25s;
+            }
+
+            .blcm-field.is-active {
+                border-left-color: var(--blcm-cyan);
+            }
+
+            .btn-blcm-primary {
+                background-color: var(--blcm-violet);
+                color: #ffffff;
+                border-radius: 30px;
+                padding: 12px 36px;
+                font-weight: 600;
+                border: none;
+                transition: background-color 0.2s, transform 0.15s;
+            }
+
+            .btn-blcm-primary:hover {
+                background-color: #7305e8;
+                color: #ffffff;
+                transform: translateY(-1px);
+            }
+
+            .btn-blcm-secondary {
+                background-color: #ffffff;
+                color: var(--blcm-ink);
+                border-radius: 30px;
+                padding: 12px 32px;
+                font-weight: 600;
+                border: 1.5px solid #e6e5ec;
+                transition: border-color 0.2s;
+            }
+
+            .btn-blcm-secondary:hover {
+                color: var(--blcm-ink);
+                border-color: var(--blcm-violet);
+            }
+        </style>
+    </head>
+<body>
+        <!-- Fondo animado sutil: un par de blobs violeta/cyan flotando muy tenue -->
+        <canvas id="blcm-bg-canvas"></canvas>
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-9 col-md-11">
+                    
+                    <div class="blcm-form-container">
+                        
+                        <h2 class="blcm-title" th:text="${usuario.cedula == null ? 'Nuevo Integrante' : 'Editar Integrante'}">
+                            Formulario de Integrante
+                        </h2>
+                        <div class="blcm-title-underline"></div>
+                        <p class="blcm-subtitle">Gestión de datos de la agrupación</p>
+                        
+                        <form th:action="@{/usuario/guardar}" th:object="${usuario}" method="post">
+
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <div class="blcm-field">
+                                        <label for="cedula" class="form-label">Cédula</label>
+                                        <input type="number" class="form-control" id="cedula" th:field="*{cedula}" 
+                                               th:readonly="${usuario.cedula != null}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="blcm-field">
+                                        <label for="nombre" class="form-label">Nombre</label>
+                                        <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="blcm-field">
+                                        <label for="apellidoPaterno" class="form-label">Primer Apellido</label>
+                                        <input type="text" class="form-control" id="apellidoPaterno" th:field="*{apellidoPaterno}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="blcm-field">
+                                        <label for="apellidoMaterno" class="form-label">Segundo Apellido</label>
+                                        <input type="text" class="form-control" id="apellidoMaterno" th:field="*{apellidoMaterno}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3 mt-4">
+                                <div class="col-md-6">
+                                    <div class="blcm-field">
+                                        <label for="correo" class="form-label">Correo electrónico</label>
+                                        <input type="email" class="form-control" id="correo" th:field="*{correo}" required />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="blcm-field">
+                                        <label for="telefono" class="form-label">Teléfono</label>
+                                        <input type="text" class="form-control" id="telefono" th:field="*{telefono}" required />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-5">
+                                <div class="col-md-6">
+                                    <div class="blcm-field">
+                                        <label for="idSeccion" class="form-label">Sección</label>
+                                        <select class="form-select" id="idSeccion" th:field="*{idSeccion}" required>
+                                            <option value="" disabled selected>Seleccione una sección...</option>
+                                            <option th:each="seccion : ${secciones}" 
+                                                    th:value="${seccion.idSeccion}" 
+                                                    th:text="${seccion.nombreSeccion}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="blcm-field">
+                                        <label for="idEstado" class="form-label">Estado</label>
+                                        <select class="form-select" id="idEstado" th:field="*{idEstado}" required>
+                                            <option value="" disabled selected>Seleccione un estado...</option>
+                                            <option th:each="estado : ${estados}" 
+                                                    th:value="${estado.idEstado}" 
+                                                    th:text="${estado.estado}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botones de Acción -->
+                            <div class="d-flex justify-content-center mt-4">
+                                <a th:href="@{/secciones/listadoDirector}" class="btn btn-blcm-secondary me-3">
+                                    Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-blcm-primary">
+                                    Guardar Integrante
+                                </button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Marca el campo activo con la barrita cyan a la izquierda (blcm-field.is-active)
+            document.querySelectorAll('.form-control, .form-select').forEach(function (el) {
+                var wrapper = el.closest('.blcm-field');
+                if (!wrapper) return;
+                el.addEventListener('focus', function () { wrapper.classList.add('is-active'); });
+                el.addEventListener('blur', function () { wrapper.classList.remove('is-active'); });
+            });
+
+            // Fondo animado: un par de blobs violeta/cyan muy tenues, movimiento lento
+            (function () {
+                var canvas = document.getElementById('blcm-bg-canvas');
+                var ctx = canvas.getContext('2d');
+                var w, h;
+
+                function resize() {
+                    w = canvas.width = window.innerWidth;
+                    h = canvas.height = window.innerHeight;
+                }
+                window.addEventListener('resize', resize);
+                resize();
+
+                var blobs = [
+                    { x: 0.15, y: 0.2, r: 220, color: 'rgba(138, 20, 255, 0.06)', speed: 0.00025, offset: 0 },
+                    { x: 0.85, y: 0.75, r: 260, color: 'rgba(128, 251, 255, 0.08)', speed: 0.00018, offset: 2 },
+                    { x: 0.5,  y: 0.9,  r: 180, color: 'rgba(138, 20, 255, 0.04)', speed: 0.0003,  offset: 4 }
+                ];
+
+                function draw(t) {
+                    ctx.clearRect(0, 0, w, h);
+                    blobs.forEach(function (b) {
+                        var dx = Math.sin(t * b.speed + b.offset) * 40;
+                        var dy = Math.cos(t * b.speed + b.offset) * 30;
+                        var cx = b.x * w + dx;
+                        var cy = b.y * h + dy;
+                        var gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, b.r);
+                        gradient.addColorStop(0, b.color);
+                        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+                        ctx.fillStyle = gradient;
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, b.r, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                    requestAnimationFrame(draw);
+                }
+                requestAnimationFrame(draw);
+            })();
+        </script>
+    </body>
+</html>

@@ -97,7 +97,6 @@
             <version>23.9.0.25.07</version>
         </dependency>
 
-        <!-- Soporte de wallet SSO (cwallet.sso) para Autonomous DB -->
         <dependency>
             <groupId>com.oracle.database.security</groupId>
             <artifactId>oraclepki</artifactId>

@@ -1735,3 +1735,79 @@ FUENTES
 #lideresTabs .nav-link i {
     color: inherit;
 }
+/* --- ESTILOS BLCMWEB PARA FORMULARIOS --- */
+body {
+    background-color: #f8f9fa; /* Fondo gris muy suave para resaltar la tarjeta */
+}
+
+.blcm-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    background-color: #ffffff;
+    overflow: hidden;
+}
+
+.blcm-header {
+    /* Degradado azul moderno, combinando con tu tema */
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: white;
+    padding: 25px 20px;
+    text-align: center;
+    border-bottom: 4px solid #0043a8;
+}
+
+.blcm-header h3 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.blcm-header p {
+    margin: 5px 0 0 0;
+    opacity: 0.8;
+    font-size: 0.95rem;
+}
+
+.blcm-form-body {
+    padding: 30px 40px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.blcm-input {
+    border-radius: 8px;
+    padding: 12px 15px;
+    border: 1px solid #ced4da;
+    background-color: #fcfcfc;
+    transition: all 0.3s ease;
+}
+
+.blcm-input:focus {
+    border-color: #0d6efd;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+}
+
+.blcm-btn-save {
+    border-radius: 8px;
+    padding: 12px 30px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.blcm-btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+}
+
+.blcm-btn-cancel {
+    border-radius: 8px;
+    padding: 12px 30px;
+    font-weight: 600;
+}

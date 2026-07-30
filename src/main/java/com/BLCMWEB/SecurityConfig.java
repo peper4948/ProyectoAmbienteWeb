@@ -1,22 +1,24 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.BLCMWEB;
 
-/**
- *
- * @author peper
- */
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    // ===== AQUÍ ESTÁ EL BEAN QUE CREA EL ENCRIPTADOR =====
+    // Esto es lo que soluciona el error de "could not be found"
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    // ====================================================
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -26,6 +28,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/img/**", "/api/chat",
+                        "/fonts/**",
                         "/webjars/**",
                         "/logo/**",
                         "/fonts/**",
@@ -35,7 +38,7 @@ public class SecurityConfig {
                         "/galeria/listado",
                         "/contacto/listado",
                         "/audiciones/listado",
-                        "/secciones/**", // <-- agregá esta línea
+                        "/secciones/**", 
                         "/login"
                 ).permitAll()
                         .anyRequest().authenticated()
@@ -45,6 +48,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .failureUrl("/login?error=true")
                         .permitAll()
+                        .defaultSuccessUrl("/inicio/listado", true)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
@@ -61,5 +65,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 }
