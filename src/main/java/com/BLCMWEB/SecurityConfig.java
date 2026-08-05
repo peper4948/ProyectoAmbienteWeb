@@ -12,13 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // ===== AQUÍ ESTÁ EL BEAN QUE CREA EL ENCRIPTADOR =====
-    // Esto es lo que soluciona el error de "could not be found"
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    // ====================================================
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -27,21 +24,22 @@ public class SecurityConfig {
                 .ignoringRequestMatchers("/api/chat")
                 )
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/css/**", "/js/**", "/img/**", "/api/chat",
-                        "/fonts/**",
-                        "/webjars/**",
-                        "/logo/**",
-                        "/fonts/**",
-                        "/",
-                        "/inicio/listado",
-                        "/calendario/listado",
-                        "/galeria/listado",
-                        "/contacto/listado",
-                        "/audiciones/listado",
-                        "/secciones/**", 
-                        "/login"
-                ).permitAll()
-                        .anyRequest().authenticated()
+                    // 1. Recursos estáticos y páginas públicas libres para todos
+                    .requestMatchers("/css/**", "/js/**", "/img/**", "/api/chat",
+                            "/fonts/**", "/webjars/**", "/logo/**",
+                            "/", "/inicio/listado", "/calendario/listado",
+                            "/galeria/listado", "/contacto/listado",
+                            "/audiciones/listado", "/login"
+                    ).permitAll()
+                    
+                    // 2. Rutas exclusivas para ADMINISTRADORES y DIRECTORES (ej. gestión de usuarios y listados avanzados)
+                    .requestMatchers("/usuario/listado", "/usuario/guardar/**", "/secciones/listadoDirector/**").hasAnyAuthority("ADMIN", "DIRECTOR")
+                    
+                    // 3. Rutas exclusivas para INTEGRANTES (ej. su panel de integrante y cambio de contraseña)
+                    .requestMatchers("/integrante/**", "/usuario/cambiarPassword").hasAuthority("INTEGRANTE")
+                    
+                    // 4. Todo lo demás requiere que el usuario haya iniciado sesión
+                    .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")

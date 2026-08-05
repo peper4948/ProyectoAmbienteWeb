@@ -37,4 +37,7 @@ public class Usuarios implements Serializable {
 
     @Column(name = "ID_TELEFONO")
     private Integer idTelefono;
+    
+    @Column(name = "ID_DIRECCION")
+    private Integer idDireccion;
 }

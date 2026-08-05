@@ -1,25 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.BLCMWEB.service;
-
-/**
- *
- * @author peper
- */
 
 import com.BLCMWEB.domain.UsuarioListadoDTO;
 import com.BLCMWEB.domain.Usuarios;
 import com.BLCMWEB.repository.UsuarioRepository;
 import java.util.List;
-import java.util.Map;
-import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class UsuarioService {
@@ -50,10 +36,12 @@ public class UsuarioService {
                 .findFirst()
                 .orElse(null);
     }
-    
-        public void cambiarPassword(Integer cedula, String passwordHash) {
+
+    public void cambiarPassword(Integer cedula, String passwordHash) {
         usuarioRepository.cambiarClave(cedula, passwordHash);
     }
-    
-}
 
+    public void asignarRol(Integer cedula, Integer idRol) {
+        usuarioRepository.asignarRol(cedula, idRol);
+    }
+}

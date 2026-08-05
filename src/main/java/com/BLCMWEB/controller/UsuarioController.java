@@ -74,7 +74,7 @@ public class UsuarioController {
         return "usuario/formulario";
     }
 
-    @PostMapping("/guardar")
+@PostMapping("/guardar")
     public String guardar(@ModelAttribute UsuarioListadoDTO dto, 
                           RedirectAttributes ra, 
                           jakarta.servlet.http.HttpServletRequest request) {
@@ -108,6 +108,9 @@ public class UsuarioController {
             usuario.setIdCorreo(idCorreo);
             usuario.setIdTelefono(idTelefono);
             
+            // ¡IMPORTANTE! Enviamos explícitamente null a la dirección para cumplir con Oracle
+            usuario.setIdDireccion(null); 
+            
             // 4. Insertar o actualizar el usuario y manejar la encriptación
             if (usuarioService.buscarPorId(dto.getCedula()) != null) {
                 // Si existe, lo actualizamos (la contraseña no se toca en este form normal)
@@ -115,14 +118,17 @@ public class UsuarioController {
             } else {
                 // Si es nuevo, aplicamos la magia de la contraseña:
                 if (dto.getClave() == null || dto.getClave().isEmpty()) {
-                    // Si viene vacía, usamos la cédula encriptada
-                    String claveEncriptada = passwordEncoder.encode(dto.getCedula().toString());
+                    String claveEncriptada = passwordEncoder.encode(String.valueOf(dto.getCedula()));
                     usuario.setClave(claveEncriptada);
                 } else {
-                    // Si el admin escribió una clave manual, la encriptamos
                     usuario.setClave(passwordEncoder.encode(dto.getClave()));
                 }
+                
+                // 1. Insertamos el usuario en Oracle
                 usuarioService.insertarUsuario(usuario);
+                
+                // 2. ¡NUEVO! Le asignamos el ROL DE INTEGRANTE (ID_ROL = 3) por defecto
+                usuarioService.asignarRol(usuario.getCedula(), 3);
             }
 
             ra.addFlashAttribute("todoOk", "Usuario guardado correctamente");

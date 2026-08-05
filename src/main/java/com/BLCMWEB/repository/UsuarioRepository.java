@@ -4,6 +4,7 @@ import com.BLCMWEB.domain.UsuarioListadoDTO;
 import com.BLCMWEB.domain.UsuarioLoginDTO;
 import com.BLCMWEB.domain.Usuarios;
 import jakarta.annotation.PostConstruct;
+import static java.io.FileDescriptor.in;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class UsuarioRepository {
     private SimpleJdbcCall cambiarPasswordCall;
     private SimpleJdbcCall loginCall;
     private SimpleJdbcCall rolesCall;
-
+    private SimpleJdbcCall usuarioRolInsertCall;
     // Mapeo utilizando los nombres de las columnas/alias devueltos por el SP
     private static final RowMapper<UsuarioListadoDTO> USUARIO_ROW_MAPPER = new RowMapper<UsuarioListadoDTO>() {
         @Override
@@ -92,6 +93,9 @@ public class UsuarioRepository {
         cambiarPasswordCall = new SimpleJdbcCall(jdbcTemplate)
                 .withCatalogName("BLCM_PROYECTO_PCK")
                 .withProcedureName("BLCM_USUARIO_CAMBIAR_CLAVE_SP");
+        usuarioRolInsertCall = new SimpleJdbcCall(jdbcTemplate)
+                .withCatalogName("BLCM_PROYECTO_PCK")
+                .withProcedureName("BLCM_USUARIO_ROL_INSERT_SP");
     }
 
     public void insertarUsuario(Usuarios usuario) {
@@ -103,10 +107,9 @@ public class UsuarioRepository {
         params.put("P_USUARIO_CLAVE", usuario.getClave());
         params.put("P_USUARIO_ID_SECCION", usuario.getIdSeccion());
         params.put("P_USUARIO_ID_ESTADO", usuario.getIdEstado());
-        
-        // Nuevas llaves foráneas
         params.put("P_USUARIO_ID_CORREO", usuario.getIdCorreo());
         params.put("P_USUARIO_ID_TELEFONO", usuario.getIdTelefono());
+        params.put("P_USUARIO_ID_DIRECCION", usuario.getIdDireccion());
 
         usuarioInsertCall.execute(params);
     }
@@ -119,10 +122,10 @@ public class UsuarioRepository {
         params.put("P_USUARIO_APELLIDO_MAT", usuario.getSegundoApellido());
         params.put("P_USUARIO_ID_SECCION", usuario.getIdSeccion());
         params.put("P_USUARIO_ID_ESTADO", usuario.getIdEstado());
-        
-        // Nuevas llaves foráneas
         params.put("P_USUARIO_ID_CORREO", usuario.getIdCorreo());
         params.put("P_USUARIO_ID_TELEFONO", usuario.getIdTelefono());
+
+        params.put("P_USUARIO_ID_DIRECCION", usuario.getIdDireccion());
 
         usuarioUpdateCall.execute(params);
     }
@@ -178,4 +181,15 @@ public class UsuarioRepository {
 
     // Mapeo para los roles devueltos por BLCM_ROLES_USUARIO_SP (columna 2: NOMBRE_ROL)
     private static final RowMapper<String> ROL_ROW_MAPPER = (rs, rowNum) -> rs.getString(2);
+    
+    
+    public void asignarRol(Integer cedula, Integer idRol) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("P_UR_CEDULA", cedula);
+        params.put("P_UR_ID_ROL", idRol);
+        params.put("P_UR_ID_ESTADO", 1); 
+        usuarioRolInsertCall.execute(params);
+    }
+    
 }
+
