@@ -1,23 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.BLCMWEB.domain;
 
 import java.io.Serializable;
 
-/**
- *
- * @author peper
- */
-
 public class SeccionListadoDTO implements Serializable {
+
     private static final long serialVersionUID = 1l;
-    
+
     private Integer idSeccion;
     private String nombreSeccion;
+    private String descripcion;   // <-- NUEVO
     private String estado;
-    private Integer idEstado; 
+    private Integer idEstado;
     private String clave;
 
     public Integer getIdSeccion() {
@@ -34,6 +27,14 @@ public class SeccionListadoDTO implements Serializable {
 
     public void setNombreSeccion(String nombreSeccion) {
         this.nombreSeccion = nombreSeccion;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public String getEstado() {
@@ -59,8 +60,4 @@ public class SeccionListadoDTO implements Serializable {
     public void setClave(String clave) {
         this.clave = clave;
     }
-    
-    
 }
-    
-

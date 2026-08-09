@@ -2,6 +2,7 @@ package com.BLCMWEB;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,45 +21,49 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // CSRF: ignorar el endpoint de guardado de audición si tu frontend hace POST sin token
                 .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/chat")
+                .ignoringRequestMatchers("/api/chat", "/audiciones/guardar")
                 )
                 .authorizeHttpRequests(auth -> auth
-                    // 1. Recursos estáticos y páginas públicas libres para todos
-                    .requestMatchers("/css/**", "/js/**", "/img/**", "/api/chat",
-                            "/fonts/**", "/webjars/**", "/logo/**",
-                            "/", "/inicio/listado", "/calendario/listado",
-                            "/galeria/listado", "/contacto/listado",
-                            "/audiciones/listado", "/login"
-                    ).permitAll()
-                    
-                    // 2. Rutas exclusivas para ADMINISTRADORES y DIRECTORES (ej. gestión de usuarios y listados avanzados)
-                    .requestMatchers("/usuario/listado", "/usuario/guardar/**", "/secciones/listadoDirector/**").hasAnyAuthority("ADMIN", "DIRECTOR")
-                    
-                    // 3. Rutas exclusivas para INTEGRANTES (ej. su panel de integrante y cambio de contraseña)
-                    .requestMatchers("/integrante/**", "/usuario/cambiarPassword").hasAuthority("INTEGRANTE")
-                    
-                    // 4. Todo lo demás requiere que el usuario haya iniciado sesión
-                    .anyRequest().authenticated()
+                // Recursos estáticos y favicon
+                .requestMatchers("/favicon.ico").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/img/**", "/fonts/**", "/webjars/**", "/logo/**").permitAll()
+                // Páginas públicas
+                .requestMatchers("/", "/inicio/listado", "/calendario/listado", "/galeria/listado", "/contacto/listado", "/login").permitAll()
+                // Permitir explícitamente GET para audiciones (página pública)
+                .requestMatchers(HttpMethod.GET, "/audiciones/**").permitAll()
+                // Permitir POST para guardar audición (si tu frontend lo usa)
+                .requestMatchers(HttpMethod.POST, "/audiciones/guardar").permitAll()
+                // Permitir OPTIONS (preflight CORS) para evitar bloqueos en fetch
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Otros endpoints públicos que uses
+                .requestMatchers("/api/chat").permitAll()
+                // Rutas con roles
+                .requestMatchers("/usuario/listado", "/usuario/guardar/**", "/secciones/listadoDirector/**")
+                .hasAnyAuthority("ADMIN", "DIRECTOR")
+                .requestMatchers("/integrante/**", "/usuario/cambiarPassword").hasAuthority("INTEGRANTE")
+                // El resto requiere autenticación
+                .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
-                        .failureUrl("/login?error=true")
-                        .permitAll()
-                        .defaultSuccessUrl("/inicio/listado", true)
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .failureUrl("/login?error=true")
+                .permitAll()
+                .defaultSuccessUrl("/inicio/listado", true)
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/inicio/listado")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .permitAll()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/inicio/listado")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedPage("/acceso_denegado"))
                 .sessionManagement(session -> session
-                        .maximumSessions(1)
-                        .maxSessionsPreventsLogin(false)
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(false)
                 );
 
         return http.build();

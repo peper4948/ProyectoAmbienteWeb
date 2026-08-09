@@ -1,4 +1,9 @@
-<!-- ENCABEZADO -->
+<head>
+    <meta charset="utf-8" />
+    <title th:fragment="title">Audiciones - BLCM</title>
+</head>
+
+<!-- FRAGMENT: header-pagina -->
 <section th:fragment="header-pagina">
     <div class="page-header">
         <h1>Audiciones</h1>
@@ -6,37 +11,72 @@
     </div>
 </section>
 
-<!-- CONTENIDO -->
+<!-- FRAGMENT: contenido -->
 <section th:fragment="contenido">
     <div class="container my-5 principal">
 
-        <div id="bannerCerrado" class="banner-cerrado mb-4" style="display:none;">
-            <i class="fa-solid fa-door-closed"></i>
-            <h3>Audiciones cerradas</h3>
-            <p>Por el momento no hay audiciones abiertas.<br>
-               Mantente pendiente de nuestras redes sociales para más información.</p>
-            <div class="d-flex justify-content-center gap-3 mt-3">
-                <a class="social-btn ig" href="https://www.instagram.com/blcm__lirica">
-                    <img th:src="@{/logo/instagram.svg}" height="22">
-                </a>
-                <a class="social-btn fb" href="https://www.facebook.com/profile.php?id=100092644479915&locale=es_LA">
-                    <img th:src="@{/logo/facebook.svg}" height="22">
-                </a>
-                <a class="social-btn tk" href="https://www.tiktok.com/@blcm__lirica?lang=es-419">
-                    <img th:src="@{/logo/tiktok.svg}" height="22">
-                </a>
-            </div>
-        </div>
+        <h5 class="seccion-titulo-page mb-4">Secciones disponibles</h5>
 
-        <div id="gridSecciones" style="display:none;">
-            <h5 class="seccion-titulo-page mb-4">Secciones disponibles</h5>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4" id="cardContainer"></div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+            <!-- Iterar y mostrar tarjetas -->
+            <div class="col" th:each="sec : ${secciones}">
+                <!-- Tarjeta abierta -->
+                <div th:if="${sec.idEstado == 1}"
+                     class="seccion-card abierta"
+                     th:attr="data-id=${sec.idSeccion}, data-name=${sec.nombreSeccion}"
+                     onclick="abrirModalDesdeElemento(this)">
+                    <p class="seccion-nombre" th:text="${sec.nombreSeccion}">Nombre Sección</p>
+                    <p class="seccion-descripcion" th:text="${sec.descripcion}">Descripción</p>
+                    <span class="badge-abierta">
+                        <i class="fa-solid fa-circle-check me-1"></i>
+                        Abierta — clic para aplicar
+                    </span>
+                    <div class="card-divider"></div>
+                    <ul class="requisitos" id="reqPlaceholder"></ul>
+                </div>
+
+                <!-- Tarjeta cerrada -->
+                <div th:unless="${sec.idEstado == 1}" class="seccion-card deshabilitada">
+                    <p class="seccion-nombre" th:text="${sec.nombreSeccion}">Nombre Sección</p>
+                    <p class="seccion-descripcion" th:text="${sec.descripcion}">Descripción</p>
+                    <span class="badge-cerrada">
+                        <i class="fa-solid fa-circle-xmark me-1"></i>
+                        Cerrada
+                    </span>
+                </div>
+            </div>
+
+            <!-- Si no hay secciones, mostrar tarjetas de marcador -->
+            <div class="col" th:if="${secciones == null or #lists.isEmpty(secciones)}">
+                <div class="seccion-card abierta placeholder">
+                    <p class="seccion-nombre">Próximamente</p>
+                    <p class="seccion-descripcion">Estamos preparando las audiciones. Mantente pendiente.</p>
+                    <span class="badge-abierta">
+                        <i class="fa-solid fa-clock me-1"></i>
+                        Próximamente
+                    </span>
+                    <div class="card-divider"></div>
+                    <ul class="requisitos">
+                        <li>Requisitos se publicarán aquí</li>
+                    </ul>
+                </div>
+
+                <div class="seccion-card deshabilitada placeholder">
+                    <p class="seccion-nombre">Sección de ejemplo</p>
+                    <p class="seccion-descripcion">Descripción de ejemplo para mostrar el diseño de la tarjeta.</p>
+                    <span class="badge-cerrada">
+                        <i class="fa-solid fa-circle-xmark me-1"></i>
+                        Cerrada
+                    </span>
+                </div>
+            </div>
         </div>
 
     </div>
 </section>
 
-<!-- MODAL -->
+
+<!-- FRAGMENT: modal -->
 <section th:fragment="modal">
     <div class="modal fade" id="modalAudicion" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -46,37 +86,56 @@
                         <i class="fa-solid fa-music me-2" style="color:rgba(138,20,255,1);"></i>
                         Formulario de Audición
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
+
                 <div class="modal-body p-4">
                     <span class="modal-seccion-badge" id="modalSeccionNombre"></span>
+
                     <form id="formAudicion" novalidate>
-                        <input type="hidden" id="audSeccion" name="seccion">
+                        <input type="hidden" id="audIdSeccion" name="idSeccion">
+
                         <div class="row g-3">
                             <div class="col-12">
+                                <label for="audCedula">Cédula</label>
+                                <input type="number" class="form-control" id="audCedula" name="cedula" placeholder="Tu número de cédula" required>
+                                <div class="invalid-feedback">Ingresa tu cédula.</div>
+                            </div>
+
+                            <div class="col-12">
                                 <label for="audNombre">Nombre</label>
-                                <input type="text" class="form-control" id="audNombre"
-                                       name="nombre" placeholder="Tu nombre" required>
+                                <input type="text" class="form-control" id="audNombre" name="nombre" placeholder="Tu nombre" required>
                                 <div class="invalid-feedback">Ingresa tu nombre.</div>
                             </div>
-                            <div class="col-12">
-                                <label for="audApellidos">Apellidos</label>
-                                <input type="text" class="form-control" id="audApellidos"
-                                       name="apellidos" placeholder="Tus apellidos" required>
-                                <div class="invalid-feedback">Ingresa tus apellidos.</div>
+
+                            <div class="col-sm-6">
+                                <label for="audApellidoPaterno">Primer apellido</label>
+                                <input type="text" class="form-control" id="audApellidoPaterno" name="apellidoPaterno" required>
+                                <div class="invalid-feedback">Ingresa tu primer apellido.</div>
                             </div>
+
+                            <div class="col-sm-6">
+                                <label for="audApellidoMaterno">Segundo apellido</label>
+                                <input type="text" class="form-control" id="audApellidoMaterno" name="apellidoMaterno">
+                            </div>
+
                             <div class="col-12">
                                 <label for="audCorreo">Correo electrónico</label>
-                                <input type="email" class="form-control" id="audCorreo"
-                                       name="correo" placeholder="tucorreo@ejemplo.com" required>
+                                <input type="email" class="form-control" id="audCorreo" name="correo" placeholder="tucorreo@ejemplo.com" required>
                                 <div class="invalid-feedback">Ingresa un correo válido.</div>
                             </div>
+
                             <div class="col-12">
                                 <label for="audTelefono">Teléfono</label>
-                                <input type="tel" class="form-control" id="audTelefono"
-                                       name="telefono" placeholder="Tu número de teléfono" required>
+                                <input type="tel" class="form-control" id="audTelefono" name="telefono" placeholder="Tu número de teléfono" required>
                                 <div class="invalid-feedback">0000-0000</div>
                             </div>
+
+                            <div class="col-12">
+                                <label for="audComentarios">Comentarios (opcional)</label>
+                                <textarea class="form-control" id="audComentarios" name="comentarios" rows="2"></textarea>
+                            </div>
+
                             <div class="col-12 mt-2">
                                 <button type="submit" class="btn-enviar-modal" id="btnEnviarAud">
                                     <i class="fa-solid fa-paper-plane me-2"></i>Enviar solicitud
@@ -84,216 +143,146 @@
                             </div>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
 </section>
+</html>
 
+<!-- FRAGMENT: scripts -->
 <th:block th:fragment="scripts">
     <script>
-        const secciones = [
-            {
-                id: 'liras',
-                nombre: 'Liras',
-                icono: 'fa-solid fa-star',
-                claseIcono: 'ic-liras',
-                descripcion: 'Melodía y expresión musical.',
-                requisitos: [
-                    'Conocimientos básicos de lectura musical',
-                    'Edad mínima: 10 años',
-                    'Disponibilidad para ensayos semanales'
-                ]
-            },
-            {
-                id: 'guiros',
-                nombre: 'Güiros',
-                icono: 'fa-solid fa-music',
-                claseIcono: 'ic-guiros',
-                descripcion: 'Ritmo y sabor en cada presentación.',
-                requisitos: [
-                    'Sentido del ritmo',
-                    'Edad mínima: 10 años',
-                    'Disponibilidad para ensayos semanales'
-                ]
-            },
-            {
-                id: 'cajas',
-                nombre: 'Cajas',
-                icono: 'fa-solid fa-drum',
-                claseIcono: 'ic-cajas',
-                descripcion: 'Energía y precisión en el redoble.',
-                requisitos: [
-                    'Conocimientos básicos de percusión',
-                    'Edad mínima: 12 años',
-                    'Disponibilidad para ensayos semanales'
-                ]
-            },
-            {
-                id: 'bombos',
-                nombre: 'Bombos',
-                icono: 'fa-solid fa-circle',
-                claseIcono: 'ic-bombos',
-                descripcion: 'La base que hace vibrar la banda.',
-                requisitos: [
-                    'Buena condición física',
-                    'Edad mínima: 13 años',
-                    'Disponibilidad para ensayos semanales'
-                ]
-            },
-            {
-                id: 'tenores',
-                nombre: 'Tenores',
-                icono: 'fa-solid fa-drum-steelpan',
-                claseIcono: 'ic-tenores',
-                descripcion: 'Color y dinámica al ritmo.',
-                requisitos: [
-                    'Edad mínima: 12 años',
-                    'Disponibilidad para ensayos Sábados'
-                ]
-            },
-            {
-                id: 'principales',
-                nombre: 'Principales',
-                icono: 'fa-solid fa-bullhorn',
-                claseIcono: 'ic-principales',
-                descripcion: 'La voz líder de la banda.',
-                requisitos: [
-                    'Contar con instrumento propio',
-                    'Edad mínima: 13 años'
-                ]
-            },
-            {
-                id: 'colorguard',
-                nombre: 'Color Guard',
-                icono: 'fa-solid fa-flag',
-                claseIcono: 'ic-colorguard',
-                descripcion: 'Movimiento, color y actitud.',
-                requisitos: [
-                    'Habilidad para el movimiento y baile',
-                    'Edad mínima: 12 años',
-                    'Disponibilidad para ensayos semanales'
-                ]
-            },
-            {
-                id: 'folclore',
-                nombre: 'Folclore',
-                icono: 'fa-solid fa-people-group',
-                claseIcono: 'ic-folclore',
-                descripcion: 'Tradición y cultura costarricense.',
-                requisitos: [
-                    'Interés en baile y cultura costarricense',
-                    'Edad mínima: 10 años',
-                    'Disponibilidad para ensayos semanales'
-                ]
-            }
-        ];
-
-        emailjs.init('yVrLR4JA16_G-3zoX');
-
-        const cfg   = BLCM_CONFIG.audiciones;
-        const modal = new bootstrap.Modal(document.getElementById('modalAudicion'));
-
-        function renderGlobal() {
-            document.getElementById('bannerCerrado').style.display = cfg.global ? 'none'  : 'block';
-            document.getElementById('gridSecciones').style.display = cfg.global ? 'block' : 'none';
-        }
-
-        function renderSecciones() {
-            const container = document.getElementById('cardContainer');
-            container.innerHTML = '';
-
-            secciones.forEach(sec => {
-                const abierta = cfg.secciones[sec.id] ?? false;
-                container.innerHTML += `
-                <div class="col">
-                    <div class="seccion-card ${abierta ? 'abierta' : 'deshabilitada'}"
-                         ${abierta ? `onclick="abrirModal('${sec.id}','${sec.nombre}')"` : ''}>
-                        <p class="seccion-nombre">${sec.nombre}</p>
-                        <p class="seccion-descripcion">${sec.descripcion}</p>
-                        <span class="${abierta ? 'badge-abierta' : 'badge-cerrada'}">
-                            <i class="fa-solid ${abierta ? 'fa-circle-check' : 'fa-circle-xmark'} me-1"></i>
-                            ${abierta ? 'Abierta — clic para aplicar' : 'Cerrada'}
-                        </span>
-                        <div class="card-divider"></div>
-                        <ul class="requisitos">
-                            ${sec.requisitos.map(r => `<li>${r}</li>`).join('')}
-                        </ul>
-                    </div>
-                </div>`;
-            });
-        }
-
-        function abrirModal(id, nombre) {
-            document.getElementById('audSeccion').value = nombre;
-            document.getElementById('modalSeccionNombre').textContent = nombre;
-            document.getElementById('formAudicion').classList.remove('was-validated');
-            document.getElementById('formAudicion').reset();
-            modal.show();
-        }
-
-        document.getElementById('formAudicion').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            if (!this.checkValidity()) {
-                this.classList.add('was-validated');
-                return;
-            }
-
-            const btn = document.getElementById('btnEnviarAud');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Enviando...';
-
-            const seccion   = document.getElementById('audSeccion').value;
-            const nombre    = document.getElementById('audNombre').value.trim();
-            const apellidos = document.getElementById('audApellidos').value.trim();
-            const correo    = document.getElementById('audCorreo').value.trim();
-            const telefono  = document.getElementById('audTelefono').value.trim();
-
-            emailjs.send('service_3s7nkv8', 'template_fk9gflq', {
-                tipo:        'Nueva solicitud de audición',
-                subtitulo:   'Sección: ' + seccion,
-                nombre:      nombre,
-                apellidos:   apellidos,
-                correo:      correo,
-                campo_label: 'Sección',
-                campo_valor: seccion,
-                mensaje:     telefono ? 'Teléfono: ' + telefono : '',
-            })
-            .then(() => {
-                return emailjs.send('service_3s7nkv8', 'template_1b3lqc7', {
-                    nombre:  nombre,
-                    correo:  correo,
-                    seccion: 'Sección solicitada: ' + seccion + '<br>',
-                });
-            })
-            .then(() => {
-                modal.hide();
-                this.reset();
-                this.classList.remove('was-validated');
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Solicitud enviada!',
-                    text: 'Te hemos enviado una confirmación a tu correo.',
-                    confirmButtonColor: 'rgba(138,20,255,1)',
-                });
-            })
-            .catch(err => {
-                console.error('EmailJS error:', err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error al enviar',
-                    text: 'Intenta de nuevo más tarde.',
-                    confirmButtonColor: 'rgba(138,20,255,1)',
-                });
-            })
-            .finally(() => {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Enviar solicitud';
-            });
+        // Inicializar modal de Bootstrap cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function () {
+            const modalEl = document.getElementById('modalAudicion');
+            window._audicionModal = modalEl ? new bootstrap.Modal(modalEl, {keyboard: true}) : null;
         });
 
-        renderGlobal();
-        if (cfg.global) renderSecciones();
+        /**
+         * Función que abre el modal recibiendo id y nombre de sección.
+         * id puede ser number o null; name es string.
+         */
+        function abrirModal(idSeccion, nombreSeccion) {
+            // Elementos del modal / formulario
+            const modalSeccionNombre = document.getElementById('modalSeccionNombre');
+            const audId = document.getElementById('audIdSeccion');
+            const form = document.getElementById('formAudicion');
+
+            // Rellenar valores
+            if (modalSeccionNombre)
+                modalSeccionNombre.textContent = nombreSeccion || '';
+            if (audId)
+                audId.value = idSeccion != null ? idSeccion : '';
+
+            // Resetear validación y campos (no borrar el id que acabamos de setear)
+            if (form) {
+                form.classList.remove('was-validated');
+                // reset solo los inputs visibles, mantener hidden id
+                const hiddenId = audId ? audId.value : '';
+                form.reset();
+                if (audId)
+                    audId.value = hiddenId;
+            }
+
+            // Mostrar modal
+            if (window._audicionModal) {
+                window._audicionModal.show();
+            } else {
+                // fallback: intentar crear uno y mostrar
+                const modalEl = document.getElementById('modalAudicion');
+                if (modalEl) {
+                    window._audicionModal = new bootstrap.Modal(modalEl);
+                    window._audicionModal.show();
+                }
+            }
+        }
+
+        /**
+         * Listener para abrir modal desde el elemento con data-attributes
+         * (ya lo tenías, lo dejamos por compatibilidad)
+         */
+        function abrirModalDesdeElemento(el) {
+            if (!el)
+                return;
+            const id = el.dataset.id;
+            const name = el.dataset.name || '';
+            const idNum = id ? Number(id) : null;
+            abrirModal(idNum, name);
+        }
+
+        // Listener del submit del formulario (envío por fetch)
+        (function () {
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('formAudicion');
+                if (!form)
+                    return;
+
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    if (!this.checkValidity()) {
+                        this.classList.add('was-validated');
+                        return;
+                    }
+
+                    const btn = document.getElementById('btnEnviarAud');
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Enviando...';
+                    }
+
+                    // Construir payload
+                    const payload = {
+                        cedula: (document.getElementById('audCedula').value || '').trim() || null,
+                        nombre: (document.getElementById('audNombre').value || '').trim(),
+                        apellidoPaterno: (document.getElementById('audApellidoPaterno').value || '').trim(),
+                        apellidoMaterno: (document.getElementById('audApellidoMaterno').value || '').trim() || null,
+                        email: (document.getElementById('audCorreo').value || '').trim(),
+                        telefono: (document.getElementById('audTelefono').value || '').trim(),
+                        idSeccion: Number(document.getElementById('audIdSeccion').value || 0) || null,
+                        comentarios: (document.getElementById('audComentarios').value || '').trim() || null
+                    };
+
+                    fetch('/audiciones/guardar', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(payload)
+                    })
+                            .then(res => {
+                                // si tu backend devuelve JSON con { ok: true } o similar
+                                return res.json().then(data => ({status: res.status, data}));
+                            })
+                            .then(({ status, data }) => {
+                                if (!data || !data.ok) {
+                                    const msg = data && data.error ? data.error : 'Error al guardar la solicitud';
+                                    throw new Error(msg);
+                                }
+
+                                // éxito: cerrar modal y limpiar
+                                if (window._audicionModal)
+                                    window._audicionModal.hide();
+                                form.reset();
+                                form.classList.remove('was-validated');
+
+                                // Mensaje simple (puedes usar Swal si lo tienes)
+                                alert('Solicitud enviada correctamente. Revisa tu correo.');
+                            })
+                            .catch(err => {
+                                console.error('Error al guardar audición:', err);
+                                alert(err.message || 'Error al enviar la solicitud. Intenta de nuevo.');
+                            })
+                            .finally(() => {
+                                if (btn) {
+                                    btn.disabled = false;
+                                    btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Enviar solicitud';
+                                }
+                            });
+                });
+            });
+        })();
     </script>
 </th:block>
+
+</html>

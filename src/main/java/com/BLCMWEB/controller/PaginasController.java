@@ -23,28 +23,27 @@ import jakarta.servlet.http.HttpServletRequest;
  *
  * @author peper
  */
-
 @Controller
 public class PaginasController {
-    
+
     @Autowired
     private UsuarioService usuarioService;
 
     @Autowired
     private TelefonoService telefonoService;
-    
+
     @Autowired
     private SeccionService seccionService;
-      
+
     @Autowired
     private CorreoService correoService;
 
     @Autowired
     private DireccionService direccionService;
-    
+
     @Autowired
     private EstadoService estadoService;
-    
+
     @GetMapping({"/", "/inicio/listado"})
     public String inicio() {
         return "inicio/listado";
@@ -59,14 +58,17 @@ public class PaginasController {
     public String galeria() {
         return "galeria/listado";
     }
-    
+
     @GetMapping("/contacto/listado")
     public String contacto() {
         return "contacto/listado";
     }
 
     @GetMapping("/audiciones/listado")
-    public String audiciones() {
+    public String audiciones(Model model) {
+        var secciones = seccionService.readAllSeccion();
+        model.addAttribute("secciones", secciones);
+        model.addAttribute("hayAbiertas", secciones.stream().anyMatch(s -> s.getIdEstado() != null && s.getIdEstado() == 1));
         return "audiciones/listado";
     }
 
@@ -79,16 +81,15 @@ public class PaginasController {
     public String integrantes() {
         return "integrantes/listado";
     }
-    
+
     @GetMapping("/secciones/listadoDirector")
-    public String director(Model model, HttpServletRequest request) { 
+    public String director(Model model, HttpServletRequest request) {
 
         request.getSession(true);
 
-
         model.addAttribute("usuarios", usuarioService.readAllUsuario());
         model.addAttribute("nuevoUsuario", new UsuarioListadoDTO());
-        
+
         model.addAttribute("telefonos", telefonoService.readAllTelefono());
         model.addAttribute("correos", correoService.readAllCorreo());
         model.addAttribute("secciones", seccionService.readAllSeccion());
@@ -97,16 +98,15 @@ public class PaginasController {
 
         return "secciones/listadoDirector";
     }
-    
+
     @GetMapping("/secciones/listadoLideres")
     public String lideres() {
         return "secciones/listadoLideres";
     }
-    
-        
+
     @GetMapping("/secciones/listadoPrincipales")
     public String principales() {
         return "secciones/listadoPrincipales";
     }
-    
+
 }
