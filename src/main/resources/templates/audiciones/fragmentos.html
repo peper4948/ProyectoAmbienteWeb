@@ -249,24 +249,16 @@
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(payload)
                     })
-                            .then(res => {
-                                // si tu backend devuelve JSON con { ok: true } o similar
-                                return res.json().then(data => ({status: res.status, data}));
-                            })
-                            .then(({ status, data }) => {
+                            .then(res => res.json().then(data => ({status: res.status, data})))
+                            .then(({status, data}) => {
                                 if (!data || !data.ok) {
-                                    const msg = data && data.error ? data.error : 'Error al guardar la solicitud';
-                                    throw new Error(msg);
+                                    throw new Error(data && data.error ? data.error : 'Error al guardar la solicitud');
                                 }
-
-                                // éxito: cerrar modal y limpiar
                                 if (window._audicionModal)
                                     window._audicionModal.hide();
                                 form.reset();
                                 form.classList.remove('was-validated');
-
-                                // Mensaje simple (puedes usar Swal si lo tienes)
-                                alert('Solicitud enviada correctamente. Revisa tu correo.');
+                                alert('¡Solicitud enviada! Revisa tu correo para la confirmación.');
                             })
                             .catch(err => {
                                 console.error('Error al guardar audición:', err);

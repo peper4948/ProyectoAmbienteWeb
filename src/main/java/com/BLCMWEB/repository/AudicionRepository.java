@@ -48,6 +48,7 @@ public class AudicionRepository {
         params.put("P_AUD_EMAIL", email);
         params.put("P_AUD_TELEFONO", telefono);
         params.put("P_AUD_ID_SECCION", idSeccion);
+        params.put("P_AUD_ID_ESTADO", 1);        // <-- NUEVO: 1 = Activo, según tu tabla BLCM_ESTADOS_TB
         params.put("P_AUD_COMENTARIOS", comentarios);
         audicionInsertCall.execute(params);
     }
