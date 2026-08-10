@@ -3,7 +3,12 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
     <head th:replace="~{general/fragmentos :: head}"></head>
-    <header th:replace="~{general/fragmentos :: header}"></header>
-    <section th:replace="~{audiciones/fragmentos :: header-pagina}"></section>
-    <section th:replace="~{audiciones/fragmentos :: contenido}"></section>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"></header>
+        <section th:replace="~{audiciones/fragmentos :: header-pagina}"></section>
+        <section th:replace="~{audiciones/fragmentos :: contenido}"></section>
+        <section th:replace="~{audiciones/fragmentos :: modal}"></section>
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+        <th:block th:replace="~{audiciones/fragmentos :: scripts}"></th:block>
+    </body>
 </html>
