@@ -109,4 +109,9 @@ public class PaginasController {
         return "secciones/listadoPrincipales";
     }
 
+    @GetMapping("/acceso_denegado")
+    public String accesoDenegado() {
+        return "acceso_denegado";
+    }
+
 }

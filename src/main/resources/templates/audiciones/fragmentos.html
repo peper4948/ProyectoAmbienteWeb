@@ -15,24 +15,45 @@
 <section th:fragment="contenido">
     <div class="container my-5 principal">
 
-        <h5 class="seccion-titulo-page mb-4">Secciones disponibles</h5>
+        <div th:if="${todoOk}" class="alert alert-success" th:text="${todoOk}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="seccion-titulo-page m-0">Secciones disponibles</h5>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/secciones/nuevo}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> Nueva sección
+            </a>
+        </div>
 
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
-            <!-- Iterar y mostrar tarjetas -->
             <div class="col" th:each="sec : ${secciones}">
+
                 <!-- Tarjeta abierta -->
-                <div th:if="${sec.idEstado == 1}"
-                     class="seccion-card abierta"
-                     th:attr="data-id=${sec.idSeccion}, data-name=${sec.nombreSeccion}"
-                     onclick="abrirModalDesdeElemento(this)">
-                    <p class="seccion-nombre" th:text="${sec.nombreSeccion}">Nombre Sección</p>
-                    <p class="seccion-descripcion" th:text="${sec.descripcion}">Descripción</p>
-                    <span class="badge-abierta">
-                        <i class="fa-solid fa-circle-check me-1"></i>
-                        Abierta — clic para aplicar
-                    </span>
-                    <div class="card-divider"></div>
-                    <ul class="requisitos" id="reqPlaceholder"></ul>
+                <div th:if="${sec.idEstado == 1}" class="seccion-card abierta">
+                    <div th:attr="data-id=${sec.idSeccion}, data-name=${sec.nombreSeccion}"
+                         onclick="abrirModalDesdeElemento(this)" style="cursor:pointer;">
+                        <p class="seccion-nombre" th:text="${sec.nombreSeccion}">Nombre Sección</p>
+                        <p class="seccion-descripcion" th:text="${sec.descripcion}">Descripción</p>
+                        <span class="badge-abierta">
+                            <i class="fa-solid fa-circle-check me-1"></i>
+                            Abierta — clic para aplicar
+                        </span>
+                    </div>
+
+                    <div sec:authorize="hasRole('ADMIN')" class="card-divider"></div>
+                    <div sec:authorize="hasRole('ADMIN')" class="d-flex gap-2 mt-2">
+                        <a th:href="@{/secciones/editar/{id}(id=${sec.idSeccion})}"
+                           class="btn btn-outline-secondary btn-sm" onclick="event.stopPropagation()">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <form th:action="@{/secciones/eliminar}" method="post" onclick="event.stopPropagation()">
+                            <input type="hidden" name="idSeccion" th:value="${sec.idSeccion}" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm"
+                                    onclick="return confirm('¿Desactivar esta sección? No aparecerá disponible para audicionar.');">
+                                <i class="fas fa-ban"></i> Desactivar
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 <!-- Tarjeta cerrada -->
@@ -43,31 +64,27 @@
                         <i class="fa-solid fa-circle-xmark me-1"></i>
                         Cerrada
                     </span>
+
+                    <div sec:authorize="hasRole('ADMIN')" class="card-divider"></div>
+                    <div sec:authorize="hasRole('ADMIN')" class="d-flex gap-2 mt-2">
+                        <a th:href="@{/secciones/editar/{id}(id=${sec.idSeccion})}"
+                           class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <form th:action="@{/secciones/activar}" method="post">
+                            <input type="hidden" name="idSeccion" th:value="${sec.idSeccion}" />
+                            <button type="submit" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-check"></i> Activar
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
-            <!-- Si no hay secciones, mostrar tarjetas de marcador -->
             <div class="col" th:if="${secciones == null or #lists.isEmpty(secciones)}">
                 <div class="seccion-card abierta placeholder">
                     <p class="seccion-nombre">Próximamente</p>
                     <p class="seccion-descripcion">Estamos preparando las audiciones. Mantente pendiente.</p>
-                    <span class="badge-abierta">
-                        <i class="fa-solid fa-clock me-1"></i>
-                        Próximamente
-                    </span>
-                    <div class="card-divider"></div>
-                    <ul class="requisitos">
-                        <li>Requisitos se publicarán aquí</li>
-                    </ul>
-                </div>
-
-                <div class="seccion-card deshabilitada placeholder">
-                    <p class="seccion-nombre">Sección de ejemplo</p>
-                    <p class="seccion-descripcion">Descripción de ejemplo para mostrar el diseño de la tarjeta.</p>
-                    <span class="badge-cerrada">
-                        <i class="fa-solid fa-circle-xmark me-1"></i>
-                        Cerrada
-                    </span>
                 </div>
             </div>
         </div>

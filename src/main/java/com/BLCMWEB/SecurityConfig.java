@@ -26,24 +26,18 @@ public class SecurityConfig {
                 .ignoringRequestMatchers("/api/chat", "/audiciones/guardar")
                 )
                 .authorizeHttpRequests(auth -> auth
-                // Recursos estáticos y favicon
-                .requestMatchers("/favicon.ico").permitAll()
-                .requestMatchers("/css/**", "/js/**", "/img/**", "/fonts/**", "/webjars/**", "/logo/**").permitAll()
-                // Páginas públicas
-                .requestMatchers("/", "/inicio/listado", "/calendario/listado", "/galeria/listado", "/contacto/listado", "/login").permitAll()
-                // Permitir explícitamente GET para audiciones (página pública)
-                .requestMatchers(HttpMethod.GET, "/audiciones/**").permitAll()
-                // Permitir POST para guardar audición (si tu frontend lo usa)
-                .requestMatchers(HttpMethod.POST, "/audiciones/guardar").permitAll()
-                // Permitir OPTIONS (preflight CORS) para evitar bloqueos en fetch
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // Otros endpoints públicos que uses
-                .requestMatchers("/api/chat").permitAll()
-                // Rutas con roles
+                .requestMatchers("/css/**", "/js/**", "/img/**", "/api/chat",
+                        "/fonts/**", "/webjars/**", "/logo/**",
+                        "/", "/inicio/listado", "/calendario/listado",
+                        "/galeria/listado", "/contacto/listado",
+                        "/audiciones/listado", "/audiciones/guardar", "/login", "/acceso_denegado"
+                ).permitAll()
+                .requestMatchers("/secciones/nuevo", "/secciones/editar/**", "/secciones/guardar",
+                        "/secciones/eliminar", "/secciones/activar")
+                .hasRole("ADMIN")
                 .requestMatchers("/usuario/listado", "/usuario/guardar/**", "/secciones/listadoDirector/**")
-                .hasAnyAuthority("ADMIN", "DIRECTOR")
-                .requestMatchers("/integrante/**", "/usuario/cambiarPassword").hasAuthority("INTEGRANTE")
-                // El resto requiere autenticación
+                .hasAnyRole("ADMIN", "DIRECTOR")
+                .requestMatchers("/integrante/**", "/usuario/cambiarPassword").hasRole("INTEGRANTE")
                 .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

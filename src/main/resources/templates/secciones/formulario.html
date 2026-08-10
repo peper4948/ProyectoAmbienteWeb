@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body>
+        <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+            <div class="card shadow" style="max-width: 480px; width: 100%;">
+                <div class="card-body p-4">
+                    <h4 class="text-center mb-4" style="font-weight:700;"
+                        th:text="${seccion.idSeccion == null ? 'Nueva Sección' : 'Editar Sección'}">Formulario de Sección</h4>
+
+                    <form th:action="@{/secciones/guardar}" th:object="${seccion}" method="post">
+                        <input type="hidden" th:field="*{idSeccion}" />
+
+                        <div class="mb-3">
+                            <label for="nombreSeccion" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombreSeccion" th:field="*{nombreSeccion}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="idEstado" class="form-label">Estado</label>
+                            <select class="form-select" id="idEstado" th:field="*{idEstado}" required>
+                                <option value="1">Activo</option>
+                                <option value="2">Inactivo</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-center gap-3">
+                            <a th:href="@{/audiciones/listado}" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-blcm">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"></header>
+        <div class="container d-flex flex-column justify-content-center align-items-center text-center"
+             style="min-height: 70vh;">
+            <i class="fa-solid fa-triangle-exclamation fa-4x mb-4" style="color:#e94560;"></i>
+            <h2>Acceso denegado</h2>
+            <p class="text-muted">No tienes permisos para ver esta página.</p>
+            <a th:href="@{/inicio/listado}" class="btn btn-blcm mt-3">Volver al inicio</a>
+        </div>
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+    </body>
+</html>
