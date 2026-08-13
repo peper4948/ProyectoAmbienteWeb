@@ -254,12 +254,35 @@
                                 </div>
                                 <!-- ============ CRUD LÍDERES DE SECCIÓN ============ -->
                                 <div class="tab-pane fade" id="pane-lideres" role="tabpanel">
+
                                     <div class="card shadow mb-4">
-                                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                        <div class="card-header py-3">
+                                            <h6 class="m-0 font-weight-bold text-primary">Ascender integrante a Líder de Sección</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <form th:action="@{/lider/asignar}" method="post" class="row g-3 align-items-end">
+                                                <div class="col-md-8">
+                                                    <label class="form-label">Selecciona un integrante</label>
+                                                    <select name="cedula" class="form-select" required>
+                                                        <option value="" disabled selected>-- Elige un integrante --</option>
+                                                        <option th:each="u : ${integrantesDisponibles}"
+                                                                th:value="${u.cedula}"
+                                                                th:text="${u.nombre + ' ' + u.apellidoPaterno + ' — ' + u.nombreSeccion}">
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <button type="submit" class="btn btn-primary w-100">
+                                                        <i class="fas fa-user-shield"></i> Hacer Líder
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3">
                                             <h6 class="m-0 font-weight-bold text-primary">Gestión de Líderes de Sección</h6>
-                                            <button type="button" class="btn btn-primary btn-sm" disabled>
-                                                <i class="fas fa-plus"></i> Nuevo líder
-                                            </button>
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
@@ -275,38 +298,33 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td>1-1234-5678</td>
-                                                            <td>José Pablo Ramírez Fernández</td>
-                                                            <td>Cajas</td>
-                                                            <td>pepe@blcm.cr</td>
-                                                            <td><span class="badge bg-success">Activo</span></td>
+                                                        <tr th:each="l : ${lideres}">
+                                                            <td th:text="${l.cedula}"></td>
+                                                            <td th:text="${l.nombre + ' ' + l.apellidoPaterno}"></td>
+                                                            <td th:text="${l.nombreSeccion}"></td>
+                                                            <td th:text="${l.correo}"></td>
                                                             <td>
-                                                                <button class="btn btn-sm btn-warning" disabled><i class="fas fa-edit"></i></button>
-                                                                <button class="btn btn-sm btn-danger" disabled><i class="fas fa-trash"></i></button>
+                                                                <span th:if="${l.idEstado == 1}" class="badge bg-success">Activo</span>
+                                                                <span th:unless="${l.idEstado == 1}" class="badge bg-secondary">Inactivo</span>
+                                                            </td>
+                                                            <td>
+                                                                <form th:if="${l.idEstado == 1}" th:action="@{/lider/quitar}" method="post" style="display:inline;">
+                                                                    <input type="hidden" name="cedula" th:value="${l.cedula}" />
+                                                                    <button type="submit" class="btn btn-danger btn-sm"
+                                                                            onclick="return confirm('¿Quitar el rol de líder a este integrante?');">
+                                                                        <i class="fas fa-user-minus"></i> Quitar
+                                                                    </button>
+                                                                </form>
+                                                                <form th:unless="${l.idEstado == 1}" th:action="@{/lider/asignar}" method="post" style="display:inline;">
+                                                                    <input type="hidden" name="cedula" th:value="${l.cedula}" />
+                                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                                        <i class="fas fa-user-check"></i> Reactivar
+                                                                    </button>
+                                                                </form>
                                                             </td>
                                                         </tr>
-                                                        <tr>
-                                                            <td>3-0321-0654</td>
-                                                            <td>Andrés Vargas Mora</td>
-                                                            <td>Bombos</td>
-                                                            <td>andres@blcm.cr</td>
-                                                            <td><span class="badge bg-success">Activo</span></td>
-                                                            <td>
-                                                                <button class="btn btn-sm btn-warning" disabled><i class="fas fa-edit"></i></button>
-                                                                <button class="btn btn-sm btn-danger" disabled><i class="fas fa-trash"></i></button>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>2-0456-0789</td>
-                                                            <td>Mariana Solís Camacho</td>
-                                                            <td>Liras</td>
-                                                            <td>mari@blcm.cr</td>
-                                                            <td><span class="badge bg-success">Activo</span></td>
-                                                            <td>
-                                                                <button class="btn btn-sm btn-warning" disabled><i class="fas fa-edit"></i></button>
-                                                                <button class="btn btn-sm btn-danger" disabled><i class="fas fa-trash"></i></button>
-                                                            </td>
+                                                        <tr th:if="${lideres == null or #lists.isEmpty(lideres)}">
+                                                            <td colspan="6" class="text-center text-muted">Aún no hay líderes de sección asignados.</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
