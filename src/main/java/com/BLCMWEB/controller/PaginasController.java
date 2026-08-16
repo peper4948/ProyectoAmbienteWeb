@@ -1,8 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.BLCMWEB.controller;
+
 import com.BLCMWEB.service.SeccionRosterService;
 import com.BLCMWEB.service.CorreoService;
 import com.BLCMWEB.service.DireccionService;
@@ -10,30 +7,26 @@ import com.BLCMWEB.service.EstadoService;
 import com.BLCMWEB.service.SeccionService;
 import com.BLCMWEB.service.TelefonoService;
 import com.BLCMWEB.service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import com.BLCMWEB.domain.UsuarioListadoDTO;
 import com.BLCMWEB.service.AnuncioService;
-import org.springframework.ui.Model;
-import com.BLCMWEB.domain.LiderListadoDTO;
 import com.BLCMWEB.service.LiderService;
-import java.util.stream.Collectors;
+import com.BLCMWEB.service.AsistenciaService;
+import com.BLCMWEB.service.EnsayoService;
+import com.BLCMWEB.domain.UsuarioListadoDTO;
+import com.BLCMWEB.domain.LiderListadoDTO;
 import com.BLCMWEB.domain.UsuarioLoginDTO;
 import com.BLCMWEB.domain.EnsayoListadoDTO;
 import com.BLCMWEB.domain.AsistenciaMiembroDTO;
 import com.BLCMWEB.repository.UsuarioRepository;
-import com.BLCMWEB.service.AnuncioService;
-import com.BLCMWEB.service.AsistenciaService;
-import com.BLCMWEB.service.EnsayoService;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.RequestParam;
-import java.util.List;
-// IMPORTANTE: Agregamos este import para poder manejar la sesión
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.core.Authentication;
+import java.util.stream.Collectors;
+import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -141,6 +134,7 @@ public String integrantes(Model model) {
         model.addAttribute("secciones", seccionService.readAllSeccion());
         model.addAttribute("direcciones", direccionService.readAllDireccion());
         model.addAttribute("estados", estadoService.readAllEstado());
+        model.addAttribute("ensayos", ensayoService.listarEnsayos());
 
         var lideres = liderService.listarLideres();
         model.addAttribute("lideres", lideres);

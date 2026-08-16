@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
@@ -114,6 +113,12 @@
                                     <button class="nav-link" id="tab-secciones" data-bs-toggle="tab"
                                             data-bs-target="#pane-secciones" type="button" role="tab">
                                         <i class="fas fa-layer-group me-1"></i> Secciones
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="tab-ensayos" data-bs-toggle="tab"
+                                            data-bs-target="#pane-ensayos" type="button" role="tab">
+                                        <i class="fas fa-calendar-day me-1"></i> Ensayos
                                     </button>
                                 </li>
                             </ul>
@@ -415,11 +420,62 @@
                                     </div>
                                 </div>
 
-                            </div>
+                                <!-- ============ CRUD ENSAYOS ============ -->
+                                <div class="tab-pane fade" id="pane-ensayos" role="tabpanel">
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                            <h6 class="m-0 font-weight-bold text-primary">Gestión de Ensayos</h6>
+                                            <button type="button" class="btn btn-primary btn-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#modalEnsayo"
+                                                    onclick="prepararNuevoEnsayo()">
+                                                <i class="fas fa-plus"></i> Nuevo ensayo
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered align-middle" width="100%" cellspacing="0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>ID</th>
+                                                            <th>Fecha</th>
+                                                            <th>Lugar</th>
+                                                            <th>Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr th:each="ensayo : ${ensayos}">
+                                                            <td th:text="${ensayo.idEnsayo}">1</td>
+                                                            <td th:text="${ensayo.fecha != null ? #dates.format(ensayo.fecha, 'dd MMM yyyy') : ''}">01 Ene 2026</td>
+                                                            <td th:text="${ensayo.lugar}">Local</td>
+                                                            <td>
+                                                                <button type="button" class="btn btn-info btn-sm text-white"
+                                                                        data-bs-toggle="modal" data-bs-target="#modalEnsayo"
+                                                                        th:attr="onclick=|prepararEditarEnsayo(${ensayo.idEnsayo}, '${#dates.format(ensayo.fecha, 'yyyy-MM-dd')}', '${ensayo.lugar}')|">
+                                                                    <i class="fas fa-edit"></i> Editar
+                                                                </button>
+                                                                <form th:action="@{/ensayos/eliminar}" method="post" style="display:inline;">
+                                                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                                    <input type="hidden" name="idEnsayo" th:value="${ensayo.idEnsayo}"/>
+                                                                    <button type="submit" class="btn btn-danger btn-sm"
+                                                                            onclick="return confirm('¿Eliminar este ensayo?');">
+                                                                        <i class="fas fa-trash"></i> Eliminar
+                                                                    </button>
+                                                                </form>
+                                                            </td>
+                                                        </tr>
+                                                        <tr th:if="${#lists.isEmpty(ensayos)}">
+                                                            <td colspan="4" class="text-center text-muted">
+                                                                No hay ensayos registrados.
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <small class="form-text text-muted d-block mb-4">
-                                Datos de ejemplo. Los botones se habilitan cuando se conecte el backend.
-                            </small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -430,6 +486,54 @@
             <a class="scroll-to-top rounded" href="#page-top">
                 <i class="fas fa-angle-up"></i>
             </a>
+
+            <!-- ============ MODAL ENSAYO (crear / editar) ============ -->
+            <div class="modal fade" id="modalEnsayo" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{/ensayos/guardar}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" name="idEnsayo" id="ensayo-id"/>
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalEnsayoTitulo">Nuevo ensayo</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Fecha</label>
+                                    <input type="date" name="fecha" id="ensayo-fecha" class="form-control" required/>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Lugar</label>
+                                    <input type="text" name="lugar" id="ensayo-lugar" class="form-control" required
+                                           placeholder="Ej: Salón comunal de Moravia"/>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function prepararNuevoEnsayo() {
+                    document.getElementById('modalEnsayoTitulo').textContent = 'Nuevo ensayo';
+                    document.getElementById('ensayo-id').value = '';
+                    document.getElementById('ensayo-fecha').value = '';
+                    document.getElementById('ensayo-lugar').value = '';
+                }
+                function prepararEditarEnsayo(id, fecha, lugar) {
+                    document.getElementById('modalEnsayoTitulo').textContent = 'Editar ensayo';
+                    document.getElementById('ensayo-id').value = id;
+                    document.getElementById('ensayo-fecha').value = fecha;
+                    document.getElementById('ensayo-lugar').value = lugar;
+                }
+            </script>
 
             <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
