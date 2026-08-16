@@ -16,7 +16,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.BLCMWEB.domain.UsuarioListadoDTO;
 import com.BLCMWEB.service.AnuncioService;
 import org.springframework.ui.Model;
-
+import com.BLCMWEB.domain.LiderListadoDTO;
+import com.BLCMWEB.service.LiderService;
+import java.util.stream.Collectors;
+import com.BLCMWEB.domain.UsuarioLoginDTO;
+import com.BLCMWEB.domain.EnsayoListadoDTO;
+import com.BLCMWEB.domain.AsistenciaMiembroDTO;
+import com.BLCMWEB.repository.UsuarioRepository;
+import com.BLCMWEB.service.AnuncioService;
+import com.BLCMWEB.service.AsistenciaService;
+import com.BLCMWEB.service.EnsayoService;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.RequestParam;
+import java.util.List;
 // IMPORTANTE: Agregamos este import para poder manejar la sesión
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
@@ -51,6 +63,21 @@ public class PaginasController {
     
     @Autowired
     private SeccionRosterService seccionRosterService;
+
+    @Autowired
+    private LiderService liderService;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private EnsayoService ensayoService;
+
+    @Autowired
+    private AsistenciaService asistenciaService;
+
+    @Autowired
+    private AnuncioService anuncioService;
 
     @GetMapping({"/", "/inicio/listado"})
     public String inicio() {
@@ -104,23 +131,69 @@ public String integrantes(Model model) {
 }
     @GetMapping("/secciones/listadoDirector")
     public String director(Model model, HttpServletRequest request) {
-
         request.getSession(true);
 
-        model.addAttribute("usuarios", usuarioService.readAllUsuario());
+        var usuarios = usuarioService.readAllUsuario();
+        model.addAttribute("usuarios", usuarios);
         model.addAttribute("nuevoUsuario", new UsuarioListadoDTO());
-
         model.addAttribute("telefonos", telefonoService.readAllTelefono());
         model.addAttribute("correos", correoService.readAllCorreo());
         model.addAttribute("secciones", seccionService.readAllSeccion());
         model.addAttribute("direcciones", direccionService.readAllDireccion());
         model.addAttribute("estados", estadoService.readAllEstado());
 
+        var lideres = liderService.listarLideres();
+        model.addAttribute("lideres", lideres);
+
+        var cedulasLideresActivos = lideres.stream()
+                .filter(l -> l.getIdEstado() != null && l.getIdEstado() == 1)
+                .map(LiderListadoDTO::getCedula)
+                .collect(Collectors.toSet());
+
+        var integrantesDisponibles = usuarios.stream()
+                .filter(u -> u.getIdEstado() != null && u.getIdEstado() == 1)
+                .filter(u -> !cedulasLideresActivos.contains(u.getCedula()))
+                .toList();
+        model.addAttribute("integrantesDisponibles", integrantesDisponibles);
+
         return "secciones/listadoDirector";
     }
 
     @GetMapping("/secciones/listadoLideres")
-    public String lideres() {
+    public String lideres(Model model, Authentication auth,
+            @RequestParam(value = "idEnsayo", required = false) Integer idEnsayoParam) {
+
+        UsuarioLoginDTO loginInfo = usuarioRepository.buscarPorCorreo(auth.getName());
+        UsuarioListadoDTO perfil = usuarioService.buscarPorId(loginInfo.getCedula());
+
+        Integer idSeccion = usuarioRepository.buscarIdSeccionPorCedula(perfil.getCedula());
+        model.addAttribute("nombreSeccion", perfil.getNombreSeccion());
+        model.addAttribute("cedulaLider", perfil.getCedula());
+
+        List<EnsayoListadoDTO> ensayos = ensayoService.listarEnsayos();
+        model.addAttribute("ensayos", ensayos);
+
+        Integer idEnsayoSeleccionado = idEnsayoParam != null ? idEnsayoParam
+                : (ensayos.isEmpty() ? null : ensayos.get(0).getIdEnsayo());
+        model.addAttribute("idEnsayoSeleccionado", idEnsayoSeleccionado);
+
+        List<AsistenciaMiembroDTO> asistencia = idEnsayoSeleccionado != null
+                ? asistenciaService.listarAsistencia(idSeccion, idEnsayoSeleccionado)
+                : List.of();
+        model.addAttribute("asistencia", asistencia);
+
+        long presentes = asistencia.stream()
+                .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 20).count();
+        long ausentes = asistencia.stream()
+                .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 21).count();
+        long justificados = asistencia.stream()
+                .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 22).count();
+        model.addAttribute("presentesHoy", presentes);
+        model.addAttribute("ausentesHoy", ausentes);
+        model.addAttribute("justificadosHoy", justificados);
+
+        model.addAttribute("anuncios", anuncioService.listarPorSeccion(idSeccion));
+
         return "secciones/listadoLideres";
     }
 
@@ -191,8 +264,7 @@ public String principales(Model model) {
         return "secciones/listadoFolclore";
     }
     
-@Autowired
-private AnuncioService anuncioService;
+
 
     @PostMapping("/anuncio/publicar")
     public String publicarAnuncio(@RequestParam("contenido") String contenido,

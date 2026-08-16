@@ -1,39 +1,44 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.BLCMWEB.service;
-
-/**
- *
- * @author peper
- */
-import com.BLCMWEB.domain.AnuncioDTO;
-import com.BLCMWEB.repository.AnuncioRepository;
-import org.springframework.stereotype.Service;
  
+import com.BLCMWEB.domain.AnuncioDTO;
+import com.BLCMWEB.domain.AnuncioListadoDTO;
+import com.BLCMWEB.repository.AnuncioRepository;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
  
 @Service
 public class AnuncioService {
  
-    private final AnuncioRepository repository;
+    @Autowired
+    private AnuncioRepository anuncioRepository;
  
-    public AnuncioService(AnuncioRepository repository) {
-        this.repository = repository;
-    }
- 
+    // ===== Dashboard (todos los anuncios) =====
     public List<AnuncioDTO> listar() {
-        return repository.listar();
+        return anuncioRepository.listar();
     }
  
     public void publicar(Integer autorCedula, String contenido) {
         if (contenido == null || contenido.isBlank()) {
             return;
         }
-        repository.insertar(autorCedula, contenido.trim());
+        anuncioRepository.insertar(autorCedula, contenido.trim());
     }
+ 
     public void eliminar(Integer idAnuncio) {
-    repository.eliminar(idAnuncio);
-}
+        anuncioRepository.eliminar(idAnuncio);
+    }
+ 
+    // ===== Panel de líderes (anuncios por sección) =====
+    public List<AnuncioListadoDTO> listarPorSeccion(Integer idSeccion) {
+        return anuncioRepository.listarPorSeccion(idSeccion);
+    }
+ 
+    public void insertarAnuncio(Integer autorCedula, String contenido) {
+        anuncioRepository.insertarAnuncio(autorCedula, contenido);
+    }
+ 
+    public void eliminarAnuncio(Integer idAnuncio) {
+        anuncioRepository.eliminarAnuncio(idAnuncio);
+    }
 }

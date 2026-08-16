@@ -27,7 +27,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/img/**", "/api/chat",
-                        "/fonts/**", "/webjars/**", "/logo/**",
+                        "/fonts/**", "/webjars/**", "/logo/**", "/uploads/**",
                         "/", "/inicio/listado", "/calendario/listado",
                         "/galeria/listado", "/contacto/listado",
                         "/audiciones/listado", "/audiciones/guardar", "/login", "/acceso_denegado"
@@ -35,7 +35,14 @@ public class SecurityConfig {
                 .requestMatchers("/secciones/nuevo", "/secciones/editar/**", "/secciones/guardar",
                         "/secciones/eliminar", "/secciones/activar")
                 .hasRole("ADMIN")
+                .requestMatchers("/galeria/nuevo", "/galeria/editar/**", "/galeria/guardar",
+                        "/galeria/eliminar", "/galeria/activar")
+                .hasAnyRole("ADMIN", "DIRECTOR")
                 .requestMatchers("/usuario/listado", "/usuario/guardar/**", "/secciones/listadoDirector/**")
+                .hasAnyRole("ADMIN", "DIRECTOR")
+                .requestMatchers("/lider/asistencia/**", "/lider/anuncio/**")
+                .hasAnyRole("LIDER", "ADMIN", "DIRECTOR")
+                .requestMatchers("/lider/**")
                 .hasAnyRole("ADMIN", "DIRECTOR")
                 .requestMatchers("/integrante/**", "/usuario/cambiarPassword").hasRole("INTEGRANTE")
                 .anyRequest().authenticated()

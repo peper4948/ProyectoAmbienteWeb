@@ -40,23 +40,23 @@ public class UsuarioRepository {
         @Override
         public UsuarioListadoDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
             UsuarioListadoDTO dto = new UsuarioListadoDTO();
-            
+
             dto.setCedula(rs.getObject("CEDULA") != null ? rs.getInt("CEDULA") : null);
             dto.setNombre(rs.getString("NOMBRE"));
             dto.setApellidoPaterno(rs.getString("APELLIDO_PATERNO"));
             dto.setApellidoMaterno(rs.getString("APELLIDO_MATERNO"));
-            dto.setNombreSeccion(rs.getString("NOMBRE_SECCION")); 
+            dto.setNombreSeccion(rs.getString("NOMBRE_SECCION"));
             dto.setCorreo(rs.getString("EMAIL")); // Capturamos el alias del SP
             dto.setTelefono(rs.getString("TELEFONO"));
-            
+
             // Aquí capturamos la palabra ("Activo" / "Inactivo")
-            dto.setNombreEstado(rs.getString("NOMBRE_ESTADO")); 
-            
+            dto.setNombreEstado(rs.getString("NOMBRE_ESTADO"));
+
             dto.setIdEstado(rs.getObject("ID_ESTADO") != null ? rs.getInt("ID_ESTADO") : null);
-            
+
             // La fecha fue removida del SP, así que la dejamos en null para el DTO
-            dto.setFechaIngreso(null); 
-            
+            dto.setFechaIngreso(null);
+
             return dto;
         }
     };
@@ -79,7 +79,7 @@ public class UsuarioRepository {
                 .withCatalogName("BLCM_PROYECTO_PCK")
                 .withProcedureName("BLCM_USUARIO_LISTAR_SP")
                 .returningResultSet("P_CURSOR", USUARIO_ROW_MAPPER);
-        
+
         loginCall = new SimpleJdbcCall(jdbcTemplate)
                 .withCatalogName("BLCM_PROYECTO_PCK")
                 .withProcedureName("BLCM_LOGIN_USUARIO_SP")
@@ -89,7 +89,7 @@ public class UsuarioRepository {
                 .withCatalogName("BLCM_PROYECTO_PCK")
                 .withProcedureName("BLCM_ROLES_USUARIO_SP")
                 .returningResultSet("P_CURSOR", ROL_ROW_MAPPER);
-        
+
         cambiarPasswordCall = new SimpleJdbcCall(jdbcTemplate)
                 .withCatalogName("BLCM_PROYECTO_PCK")
                 .withProcedureName("BLCM_USUARIO_CAMBIAR_CLAVE_SP");
@@ -181,15 +181,22 @@ public class UsuarioRepository {
 
     // Mapeo para los roles devueltos por BLCM_ROLES_USUARIO_SP (columna 2: NOMBRE_ROL)
     private static final RowMapper<String> ROL_ROW_MAPPER = (rs, rowNum) -> rs.getString(2);
-    
-    
+
     public void asignarRol(Integer cedula, Integer idRol) {
         Map<String, Object> params = new HashMap<>();
         params.put("P_UR_CEDULA", cedula);
         params.put("P_UR_ID_ROL", idRol);
-        params.put("P_UR_ID_ESTADO", 1); 
+        params.put("P_UR_ID_ESTADO", 1);
         usuarioRolInsertCall.execute(params);
     }
-    
-}
 
+    public Integer buscarIdSeccionPorCedula(Integer cedula) {
+        List<Integer> ids = jdbcTemplate.query(
+                "SELECT ID_SECCION FROM BLCM_USUARIOS_TB WHERE CEDULA = ?",
+                (rs, rowNum) -> rs.getInt("ID_SECCION"),
+                cedula
+        );
+        return ids.isEmpty() ? null : ids.get(0);
+    }
+
+}
