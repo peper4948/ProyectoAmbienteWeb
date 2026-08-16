@@ -120,6 +120,7 @@ public String integrantes(Model model) {
     model.addAttribute("totalIntegrantes", totalIntegrantes);
     model.addAttribute("totalSecciones", totalSecciones);
     model.addAttribute("anuncios", anuncioService.listar());
+    model.addAttribute("ensayos", ensayoService.listarEnsayos());
     return "integrantes/listado";
 }
     @GetMapping("/secciones/listadoDirector")
