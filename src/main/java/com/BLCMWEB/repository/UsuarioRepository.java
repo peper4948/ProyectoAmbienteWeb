@@ -97,7 +97,7 @@ public class UsuarioRepository {
                 .withCatalogName("BLCM_PROYECTO_PCK")
                 .withProcedureName("BLCM_USUARIO_ROL_INSERT_SP");
     }
-
+    
     public void insertarUsuario(Usuarios usuario) {
         Map<String, Object> params = new HashMap<>();
         params.put("P_USUARIO_CEDULA", usuario.getCedula());

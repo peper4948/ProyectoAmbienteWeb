@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.BLCMWEB.controller;
-
+import com.BLCMWEB.service.SeccionRosterService;
 import com.BLCMWEB.service.CorreoService;
 import com.BLCMWEB.service.DireccionService;
 import com.BLCMWEB.service.EstadoService;
@@ -14,10 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import com.BLCMWEB.domain.UsuarioListadoDTO;
+import com.BLCMWEB.service.AnuncioService;
 import org.springframework.ui.Model;
 
 // IMPORTANTE: Agregamos este import para poder manejar la sesión
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -43,6 +47,10 @@ public class PaginasController {
 
     @Autowired
     private EstadoService estadoService;
+    
+    
+    @Autowired
+    private SeccionRosterService seccionRosterService;
 
     @GetMapping({"/", "/inicio/listado"})
     public String inicio() {
@@ -77,11 +85,23 @@ public class PaginasController {
         return "login";
     }
 
-    @GetMapping("/integrantes/listado")
-    public String integrantes() {
-        return "integrantes/listado";
-    }
+@GetMapping("/integrantes/listado")
+public String integrantes(Model model) {
+    var usuarios = usuarioService.readAllUsuario();
+    long totalIntegrantes = usuarios.stream()
+            .filter(u -> u.getIdEstado() != null && u.getIdEstado() == 1)
+            .count();
 
+    var secciones = seccionService.readAllSeccion();
+    long totalSecciones = secciones.stream()
+            .filter(s -> s.getIdEstado() != null && s.getIdEstado() == 1)
+            .count();
+
+    model.addAttribute("totalIntegrantes", totalIntegrantes);
+    model.addAttribute("totalSecciones", totalSecciones);
+    model.addAttribute("anuncios", anuncioService.listar());
+    return "integrantes/listado";
+}
     @GetMapping("/secciones/listadoDirector")
     public String director(Model model, HttpServletRequest request) {
 
@@ -104,14 +124,91 @@ public class PaginasController {
         return "secciones/listadoLideres";
     }
 
-    @GetMapping("/secciones/listadoPrincipales")
-    public String principales() {
-        return "secciones/listadoPrincipales";
-    }
-
+@GetMapping("/secciones/listadoPrincipales")
+public String principales(Model model) {
+    Long idPrincipales = 5L;   // era 8L
+    model.addAttribute("integrantes", seccionRosterService.listarPorSeccion(idPrincipales));
+    model.addAttribute("total", seccionRosterService.total(
+            seccionRosterService.listarPorSeccion(idPrincipales)));
+    model.addAttribute("totalActivos", seccionRosterService.totalActivos(
+            seccionRosterService.listarPorSeccion(idPrincipales)));
+    return "secciones/listadoPrincipales";
+}
     @GetMapping("/acceso_denegado")
     public String accesoDenegado() {
         return "acceso_denegado";
     }
 
+    
+    
+    private void cargarSeccion(Model model, Long idSeccion) {
+        var integrantes = seccionRosterService.listarPorSeccion(idSeccion);
+        model.addAttribute("integrantes", integrantes);
+        model.addAttribute("total", seccionRosterService.total(integrantes));
+        model.addAttribute("totalActivos", seccionRosterService.totalActivos(integrantes));
+    }
+    
+    
+     @GetMapping("/secciones/listadoLiras")
+    public String liras(Model model) {
+        cargarSeccion(model, 1L);
+        return "secciones/listadoLiras";
+    }
+ 
+    @GetMapping("/secciones/listadoBombos")
+    public String bombos(Model model) {
+        cargarSeccion(model, 2L);
+        return "secciones/listadoBombos";
+    }
+ 
+    @GetMapping("/secciones/listadoCajas")
+    public String cajas(Model model) {
+        cargarSeccion(model, 3L);
+        return "secciones/listadoCajas";
+    }
+ 
+    @GetMapping("/secciones/listadoTenores")
+    public String tenores(Model model) {
+        cargarSeccion(model, 4L);
+        return "secciones/listadoTenores";
+    }
+ 
+    @GetMapping("/secciones/listadoGuiros")
+    public String guiros(Model model) {
+        cargarSeccion(model, 6L);
+        return "secciones/listadoGuiros";
+    }
+ 
+    @GetMapping("/secciones/listadoColorGuard")
+    public String colorGuard(Model model) {
+        cargarSeccion(model, 7L);
+        return "secciones/listadoColorGuard";
+    }
+ 
+    @GetMapping("/secciones/listadoFolclore")
+    public String folclore(Model model) {
+        cargarSeccion(model, 8L);
+        return "secciones/listadoFolclore";
+    }
+    
+@Autowired
+private AnuncioService anuncioService;
+
+    @PostMapping("/anuncio/publicar")
+    public String publicarAnuncio(@RequestParam("contenido") String contenido,
+            Authentication auth) {
+        // auth.getName() = correo del usuario logueado
+        var usuario = usuarioService.buscarPorCorreo(auth.getName());
+        anuncioService.publicar(usuario.getCedula(), contenido);
+        return "redirect:/integrantes/listado";  // ruta de tu dashboard
+    }
+    
+      @PostMapping("/anuncio/eliminar")
+    public String eliminarAnuncio(@RequestParam("idAnuncio") Integer idAnuncio) {
+        anuncioService.eliminar(idAnuncio);
+        return "redirect:/integrantes/listado";  // tu ruta del dashboard
+    }
+
 }
+
+
