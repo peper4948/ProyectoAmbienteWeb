@@ -23,12 +23,10 @@ public class AnuncioRepository {
 
     private static final String PACKAGE = "BLCM_PROYECTO_PCK";
 
-    // ===== Vía SP (dashboard - Pepe) =====
     private final SimpleJdbcCall listarCall;
     private final SimpleJdbcCall insertCall;
     private final SimpleJdbcCall eliminarCall;
 
-    // ===== Vía JdbcTemplate (líderes - Herrera) =====
     private final JdbcTemplate jdbcTemplate;
 
     public AnuncioRepository(DataSource dataSource) {
@@ -84,20 +82,20 @@ public class AnuncioRepository {
         eliminarCall.execute(params);
     }
 
-    // ===== Panel de líderes (Herrera) =====
+    // ===== Panel de líderes  =====
     public List<AnuncioListadoDTO> listarPorSeccion(Integer idSeccion) {
         String sql = """
-            SELECT
-                an.ID_ANUNCIO AS ID_ANUNCIO,
-                an.AUTOR_CEDULA AS AUTOR_CEDULA,
-                u.NOMBRE || ' ' || u.PRIMER_APELLIDO AS AUTOR_NOMBRE,
-                an.FECHA AS FECHA,
-                an.CONTENIDO AS CONTENIDO
-            FROM BLCM_ANUNCIO_TB an
-            JOIN BLCM_USUARIOS_TB u ON u.CEDULA = an.AUTOR_CEDULA
-            WHERE u.ID_SECCION = ? AND an.ID_ESTADO = 1
-            ORDER BY an.FECHA DESC
-            """;
+        SELECT
+            an.ID_ANUNCIO AS ID_ANUNCIO,
+            an.AUTOR_CEDULA AS AUTOR_CEDULA,
+            u.NOMBRE || ' ' || u.PRIMER_APELLIDO AS AUTOR_NOMBRE,
+            an.FECHA AS FECHA,
+            an.CONTENIDO AS CONTENIDO
+        FROM BLCM_ANUNCIO_TB an
+        JOIN BLCM_USUARIOS_TB u ON u.CEDULA = an.AUTOR_CEDULA
+        WHERE an.ID_SECCION = ? AND an.ID_ESTADO = 1
+        ORDER BY an.FECHA DESC
+        """;
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             AnuncioListadoDTO dto = new AnuncioListadoDTO();
             dto.setIdAnuncio(rs.getInt("ID_ANUNCIO"));
@@ -109,10 +107,10 @@ public class AnuncioRepository {
         }, idSeccion);
     }
 
-    public void insertarAnuncio(Integer autorCedula, String contenido) {
+    public void insertarAnuncio(Integer autorCedula, Integer idSeccion, String contenido) {
         jdbcTemplate.update(
-            "INSERT INTO BLCM_ANUNCIO_TB (AUTOR_CEDULA, FECHA, CONTENIDO, ID_ESTADO) VALUES (?, SYSDATE, ?, 1)",
-            autorCedula, contenido
+                "INSERT INTO BLCM_ANUNCIO_TB (AUTOR_CEDULA, ID_SECCION, FECHA, CONTENIDO, ID_ESTADO) VALUES (?, ?, SYSDATE, ?, 1)",
+                autorCedula, idSeccion, contenido
         );
     }
 

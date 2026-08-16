@@ -35,26 +35,16 @@ public class AsistenciaRepository {
     }
 
     public void guardarAsistencia(Integer idEnsayo, Integer cedula, Integer idEstadoAsistencia) {
-        Integer idAsistencia = buscarIdAsistencia(idEnsayo, cedula);
-        if (idAsistencia == null) {
-            jdbcTemplate.update(
-                "INSERT INTO BLCM_ASISTENCIA_TB (ID_ENSAYO, CEDULA, ID_ESTADO) VALUES (?, ?, ?)",
-                idEnsayo, cedula, idEstadoAsistencia
-            );
-        } else {
-            jdbcTemplate.update(
-                "UPDATE BLCM_ASISTENCIA_TB SET ID_ESTADO = ? WHERE ID_ASISTENCIA = ?",
-                idEstadoAsistencia, idAsistencia
-            );
-        }
-    }
-
-    private Integer buscarIdAsistencia(Integer idEnsayo, Integer cedula) {
-        List<Integer> ids = jdbcTemplate.query(
-            "SELECT ID_ASISTENCIA FROM BLCM_ASISTENCIA_TB WHERE ID_ENSAYO = ? AND CEDULA = ?",
-            (rs, rowNum) -> rs.getInt("ID_ASISTENCIA"),
-            idEnsayo, cedula
-        );
-        return ids.isEmpty() ? null : ids.get(0);
+        String sql = """
+            MERGE INTO BLCM_ASISTENCIA_TB dest
+            USING (SELECT ? AS ID_ENSAYO, ? AS CEDULA FROM DUAL) src
+            ON (dest.ID_ENSAYO = src.ID_ENSAYO AND dest.CEDULA = src.CEDULA)
+            WHEN MATCHED THEN
+                UPDATE SET dest.ID_ESTADO = ?
+            WHEN NOT MATCHED THEN
+                INSERT (ID_ENSAYO, CEDULA, ID_ESTADO)
+                VALUES (src.ID_ENSAYO, src.CEDULA, ?)
+            """;
+        jdbcTemplate.update(sql, idEnsayo, cedula, idEstadoAsistencia, idEstadoAsistencia);
     }
 }

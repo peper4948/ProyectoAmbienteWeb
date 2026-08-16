@@ -155,42 +155,57 @@ public String integrantes(Model model) {
     }
 
     @GetMapping("/secciones/listadoLideres")
-    public String lideres(Model model, Authentication auth,
-            @RequestParam(value = "idEnsayo", required = false) Integer idEnsayoParam) {
+public String lideres(Model model, Authentication auth,
+        @RequestParam(value = "idEnsayo", required = false) Integer idEnsayoParam,
+        @RequestParam(value = "idSeccion", required = false) Integer idSeccionParam) {
 
-        UsuarioLoginDTO loginInfo = usuarioRepository.buscarPorCorreo(auth.getName());
-        UsuarioListadoDTO perfil = usuarioService.buscarPorId(loginInfo.getCedula());
+    UsuarioLoginDTO loginInfo = usuarioRepository.buscarPorCorreo(auth.getName());
+    UsuarioListadoDTO perfil = usuarioService.buscarPorId(loginInfo.getCedula());
 
-        Integer idSeccion = usuarioRepository.buscarIdSeccionPorCedula(perfil.getCedula());
-        model.addAttribute("nombreSeccion", perfil.getNombreSeccion());
-        model.addAttribute("cedulaLider", perfil.getCedula());
+    boolean esAdminODirector = auth.getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_DIRECTOR"));
+    model.addAttribute("esAdminODirector", esAdminODirector);
 
-        List<EnsayoListadoDTO> ensayos = ensayoService.listarEnsayos();
-        model.addAttribute("ensayos", ensayos);
+    Integer idSeccionPropia = usuarioRepository.buscarIdSeccionPorCedula(perfil.getCedula());
 
-        Integer idEnsayoSeleccionado = idEnsayoParam != null ? idEnsayoParam
-                : (ensayos.isEmpty() ? null : ensayos.get(0).getIdEnsayo());
-        model.addAttribute("idEnsayoSeleccionado", idEnsayoSeleccionado);
+    // Solo Admin/Director puede cambiar de sección con ?idSeccion=X
+    Integer idSeccion = (esAdminODirector && idSeccionParam != null) ? idSeccionParam : idSeccionPropia;
 
-        List<AsistenciaMiembroDTO> asistencia = idEnsayoSeleccionado != null
-                ? asistenciaService.listarAsistencia(idSeccion, idEnsayoSeleccionado)
-                : List.of();
-        model.addAttribute("asistencia", asistencia);
-
-        long presentes = asistencia.stream()
-                .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 20).count();
-        long ausentes = asistencia.stream()
-                .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 21).count();
-        long justificados = asistencia.stream()
-                .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 22).count();
-        model.addAttribute("presentesHoy", presentes);
-        model.addAttribute("ausentesHoy", ausentes);
-        model.addAttribute("justificadosHoy", justificados);
-
-        model.addAttribute("anuncios", anuncioService.listarPorSeccion(idSeccion));
-
-        return "secciones/listadoLideres";
+    if (esAdminODirector) {
+        model.addAttribute("secciones", seccionService.readAllSeccion());
     }
+    model.addAttribute("idSeccionSeleccionada", idSeccion);
+
+    var seccionInfo = seccionService.buscarPorId(idSeccion);
+    model.addAttribute("nombreSeccion", seccionInfo != null ? seccionInfo.getNombreSeccion() : "Sin sección");
+    model.addAttribute("cedulaLider", perfil.getCedula());
+
+    List<EnsayoListadoDTO> ensayos = ensayoService.listarEnsayos();
+    model.addAttribute("ensayos", ensayos);
+
+    Integer idEnsayoSeleccionado = idEnsayoParam != null ? idEnsayoParam
+            : (ensayos.isEmpty() ? null : ensayos.get(0).getIdEnsayo());
+    model.addAttribute("idEnsayoSeleccionado", idEnsayoSeleccionado);
+
+    List<AsistenciaMiembroDTO> asistencia = (idEnsayoSeleccionado != null && idSeccion != null)
+            ? asistenciaService.listarAsistencia(idSeccion, idEnsayoSeleccionado)
+            : List.of();
+    model.addAttribute("asistencia", asistencia);
+
+    long presentes = asistencia.stream()
+            .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 3).count();
+    long ausentes = asistencia.stream()
+            .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 4).count();
+    long justificados = asistencia.stream()
+            .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 5).count();
+    model.addAttribute("presentesHoy", presentes);
+    model.addAttribute("ausentesHoy", ausentes);
+    model.addAttribute("justificadosHoy", justificados);
+
+    model.addAttribute("anuncios", idSeccion != null ? anuncioService.listarPorSeccion(idSeccion) : List.of());
+
+    return "secciones/listadoLideres";
+}
 
 @GetMapping("/secciones/listadoPrincipales")
 public String principales(Model model) {
