@@ -11,6 +11,7 @@ import com.BLCMWEB.service.AnuncioService;
 import com.BLCMWEB.service.LiderService;
 import com.BLCMWEB.service.AsistenciaService;
 import com.BLCMWEB.service.EnsayoService;
+import com.BLCMWEB.service.GaleriaService;
 import com.BLCMWEB.domain.UsuarioListadoDTO;
 import com.BLCMWEB.domain.LiderListadoDTO;
 import com.BLCMWEB.domain.UsuarioLoginDTO;
@@ -52,8 +53,7 @@ public class PaginasController {
 
     @Autowired
     private EstadoService estadoService;
-    
-    
+
     @Autowired
     private SeccionRosterService seccionRosterService;
 
@@ -72,7 +72,10 @@ public class PaginasController {
     @Autowired
     private AnuncioService anuncioService;
 
-    @GetMapping({"/", "/inicio/listado"})
+    @Autowired
+    private GaleriaService galeriaService;
+
+    @GetMapping({ "/", "/inicio/listado" })
     public String inicio() {
         return "inicio/listado";
     }
@@ -83,7 +86,8 @@ public class PaginasController {
     }
 
     @GetMapping("/galeria/listado")
-    public String galeria() {
+    public String galeria(Model model) {
+        model.addAttribute("galeriaFotos", galeriaService.listarActivas());
         return "galeria/listado";
     }
 
@@ -96,7 +100,8 @@ public class PaginasController {
     public String audiciones(Model model) {
         var secciones = seccionService.readAllSeccion();
         model.addAttribute("secciones", secciones);
-        model.addAttribute("hayAbiertas", secciones.stream().anyMatch(s -> s.getIdEstado() != null && s.getIdEstado() == 1));
+        model.addAttribute("hayAbiertas",
+                secciones.stream().anyMatch(s -> s.getIdEstado() != null && s.getIdEstado() == 1));
         return "audiciones/listado";
     }
 
@@ -105,23 +110,24 @@ public class PaginasController {
         return "login";
     }
 
-@GetMapping("/integrantes/listado")
-public String integrantes(Model model) {
-    var usuarios = usuarioService.readAllUsuario();
-    long totalIntegrantes = usuarios.stream()
-            .filter(u -> u.getIdEstado() != null && u.getIdEstado() == 1)
-            .count();
+    @GetMapping("/integrantes/listado")
+    public String integrantes(Model model) {
+        var usuarios = usuarioService.readAllUsuario();
+        long totalIntegrantes = usuarios.stream()
+                .filter(u -> u.getIdEstado() != null && u.getIdEstado() == 1)
+                .count();
 
-    var secciones = seccionService.readAllSeccion();
-    long totalSecciones = secciones.stream()
-            .filter(s -> s.getIdEstado() != null && s.getIdEstado() == 1)
-            .count();
+        var secciones = seccionService.readAllSeccion();
+        long totalSecciones = secciones.stream()
+                .filter(s -> s.getIdEstado() != null && s.getIdEstado() == 1)
+                .count();
 
-    model.addAttribute("totalIntegrantes", totalIntegrantes);
-    model.addAttribute("totalSecciones", totalSecciones);
-    model.addAttribute("anuncios", anuncioService.listar());
-    return "integrantes/listado";
-}
+        model.addAttribute("totalIntegrantes", totalIntegrantes);
+        model.addAttribute("totalSecciones", totalSecciones);
+        model.addAttribute("anuncios", anuncioService.listar());
+        return "integrantes/listado";
+    }
+
     @GetMapping("/secciones/listadoDirector")
     public String director(Model model, HttpServletRequest request) {
         request.getSession(true);
@@ -135,6 +141,7 @@ public String integrantes(Model model) {
         model.addAttribute("direcciones", direccionService.readAllDireccion());
         model.addAttribute("estados", estadoService.readAllEstado());
         model.addAttribute("ensayos", ensayoService.listarEnsayos());
+        model.addAttribute("fotosGaleria", galeriaService.listarTodas());
 
         var lideres = liderService.listarLideres();
         model.addAttribute("lideres", lideres);
@@ -154,126 +161,122 @@ public String integrantes(Model model) {
     }
 
     @GetMapping("/secciones/listadoLideres")
-public String lideres(Model model, Authentication auth,
-        @RequestParam(value = "idEnsayo", required = false) Integer idEnsayoParam,
-        @RequestParam(value = "idSeccion", required = false) Integer idSeccionParam) {
+    public String lideres(Model model, Authentication auth,
+            @RequestParam(value = "idEnsayo", required = false) Integer idEnsayoParam,
+            @RequestParam(value = "idSeccion", required = false) Integer idSeccionParam) {
 
-    UsuarioLoginDTO loginInfo = usuarioRepository.buscarPorCorreo(auth.getName());
-    UsuarioListadoDTO perfil = usuarioService.buscarPorId(loginInfo.getCedula());
+        UsuarioLoginDTO loginInfo = usuarioRepository.buscarPorCorreo(auth.getName());
+        UsuarioListadoDTO perfil = usuarioService.buscarPorId(loginInfo.getCedula());
 
-    boolean esAdminODirector = auth.getAuthorities().stream()
-            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_DIRECTOR"));
-    model.addAttribute("esAdminODirector", esAdminODirector);
+        boolean esAdminODirector = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_DIRECTOR"));
+        model.addAttribute("esAdminODirector", esAdminODirector);
 
-    Integer idSeccionPropia = usuarioRepository.buscarIdSeccionPorCedula(perfil.getCedula());
+        Integer idSeccionPropia = usuarioRepository.buscarIdSeccionPorCedula(perfil.getCedula());
 
-    // Solo Admin/Director puede cambiar de sección con ?idSeccion=X
-    Integer idSeccion = (esAdminODirector && idSeccionParam != null) ? idSeccionParam : idSeccionPropia;
+        // Solo Admin/Director puede cambiar de sección con ?idSeccion=X
+        Integer idSeccion = (esAdminODirector && idSeccionParam != null) ? idSeccionParam : idSeccionPropia;
 
-    if (esAdminODirector) {
-        model.addAttribute("secciones", seccionService.readAllSeccion());
+        if (esAdminODirector) {
+            model.addAttribute("secciones", seccionService.readAllSeccion());
+        }
+        model.addAttribute("idSeccionSeleccionada", idSeccion);
+
+        var seccionInfo = seccionService.buscarPorId(idSeccion);
+        model.addAttribute("nombreSeccion", seccionInfo != null ? seccionInfo.getNombreSeccion() : "Sin sección");
+        model.addAttribute("cedulaLider", perfil.getCedula());
+
+        List<EnsayoListadoDTO> ensayos = ensayoService.listarEnsayos();
+        model.addAttribute("ensayos", ensayos);
+
+        Integer idEnsayoSeleccionado = idEnsayoParam != null ? idEnsayoParam
+                : (ensayos.isEmpty() ? null : ensayos.get(0).getIdEnsayo());
+        model.addAttribute("idEnsayoSeleccionado", idEnsayoSeleccionado);
+
+        List<AsistenciaMiembroDTO> asistencia = (idEnsayoSeleccionado != null && idSeccion != null)
+                ? asistenciaService.listarAsistencia(idSeccion, idEnsayoSeleccionado)
+                : List.of();
+        model.addAttribute("asistencia", asistencia);
+
+        long presentes = asistencia.stream()
+                .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 3).count();
+        long ausentes = asistencia.stream()
+                .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 4).count();
+        long justificados = asistencia.stream()
+                .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 5).count();
+        model.addAttribute("presentesHoy", presentes);
+        model.addAttribute("ausentesHoy", ausentes);
+        model.addAttribute("justificadosHoy", justificados);
+
+        model.addAttribute("anuncios", idSeccion != null ? anuncioService.listarPorSeccion(idSeccion) : List.of());
+
+        return "secciones/listadoLideres";
     }
-    model.addAttribute("idSeccionSeleccionada", idSeccion);
 
-    var seccionInfo = seccionService.buscarPorId(idSeccion);
-    model.addAttribute("nombreSeccion", seccionInfo != null ? seccionInfo.getNombreSeccion() : "Sin sección");
-    model.addAttribute("cedulaLider", perfil.getCedula());
+    @GetMapping("/secciones/listadoPrincipales")
+    public String principales(Model model) {
+        Long idPrincipales = 5L; // era 8L
+        model.addAttribute("integrantes", seccionRosterService.listarPorSeccion(idPrincipales));
+        model.addAttribute("total", seccionRosterService.total(
+                seccionRosterService.listarPorSeccion(idPrincipales)));
+        model.addAttribute("totalActivos", seccionRosterService.totalActivos(
+                seccionRosterService.listarPorSeccion(idPrincipales)));
+        return "secciones/listadoPrincipales";
+    }
 
-    List<EnsayoListadoDTO> ensayos = ensayoService.listarEnsayos();
-    model.addAttribute("ensayos", ensayos);
-
-    Integer idEnsayoSeleccionado = idEnsayoParam != null ? idEnsayoParam
-            : (ensayos.isEmpty() ? null : ensayos.get(0).getIdEnsayo());
-    model.addAttribute("idEnsayoSeleccionado", idEnsayoSeleccionado);
-
-    List<AsistenciaMiembroDTO> asistencia = (idEnsayoSeleccionado != null && idSeccion != null)
-            ? asistenciaService.listarAsistencia(idSeccion, idEnsayoSeleccionado)
-            : List.of();
-    model.addAttribute("asistencia", asistencia);
-
-    long presentes = asistencia.stream()
-            .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 3).count();
-    long ausentes = asistencia.stream()
-            .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 4).count();
-    long justificados = asistencia.stream()
-            .filter(a -> a.getIdEstadoAsistencia() != null && a.getIdEstadoAsistencia() == 5).count();
-    model.addAttribute("presentesHoy", presentes);
-    model.addAttribute("ausentesHoy", ausentes);
-    model.addAttribute("justificadosHoy", justificados);
-
-    model.addAttribute("anuncios", idSeccion != null ? anuncioService.listarPorSeccion(idSeccion) : List.of());
-
-    return "secciones/listadoLideres";
-}
-
-@GetMapping("/secciones/listadoPrincipales")
-public String principales(Model model) {
-    Long idPrincipales = 5L;   // era 8L
-    model.addAttribute("integrantes", seccionRosterService.listarPorSeccion(idPrincipales));
-    model.addAttribute("total", seccionRosterService.total(
-            seccionRosterService.listarPorSeccion(idPrincipales)));
-    model.addAttribute("totalActivos", seccionRosterService.totalActivos(
-            seccionRosterService.listarPorSeccion(idPrincipales)));
-    return "secciones/listadoPrincipales";
-}
     @GetMapping("/acceso_denegado")
     public String accesoDenegado() {
         return "acceso_denegado";
     }
 
-    
-    
     private void cargarSeccion(Model model, Long idSeccion) {
         var integrantes = seccionRosterService.listarPorSeccion(idSeccion);
         model.addAttribute("integrantes", integrantes);
         model.addAttribute("total", seccionRosterService.total(integrantes));
         model.addAttribute("totalActivos", seccionRosterService.totalActivos(integrantes));
     }
-    
-    
-     @GetMapping("/secciones/listadoLiras")
+
+    @GetMapping("/secciones/listadoLiras")
     public String liras(Model model) {
         cargarSeccion(model, 1L);
         return "secciones/listadoLiras";
     }
- 
+
     @GetMapping("/secciones/listadoBombos")
     public String bombos(Model model) {
         cargarSeccion(model, 2L);
         return "secciones/listadoBombos";
     }
- 
+
     @GetMapping("/secciones/listadoCajas")
     public String cajas(Model model) {
         cargarSeccion(model, 3L);
         return "secciones/listadoCajas";
     }
- 
+
     @GetMapping("/secciones/listadoTenores")
     public String tenores(Model model) {
         cargarSeccion(model, 4L);
         return "secciones/listadoTenores";
     }
- 
+
     @GetMapping("/secciones/listadoGuiros")
     public String guiros(Model model) {
         cargarSeccion(model, 6L);
         return "secciones/listadoGuiros";
     }
- 
+
     @GetMapping("/secciones/listadoColorGuard")
     public String colorGuard(Model model) {
         cargarSeccion(model, 7L);
         return "secciones/listadoColorGuard";
     }
- 
+
     @GetMapping("/secciones/listadoFolclore")
     public String folclore(Model model) {
         cargarSeccion(model, 8L);
         return "secciones/listadoFolclore";
     }
-    
-
 
     @PostMapping("/anuncio/publicar")
     public String publicarAnuncio(@RequestParam("contenido") String contenido,
@@ -281,15 +284,13 @@ public String principales(Model model) {
         // auth.getName() = correo del usuario logueado
         var usuario = usuarioService.buscarPorCorreo(auth.getName());
         anuncioService.publicar(usuario.getCedula(), contenido);
-        return "redirect:/integrantes/listado";  // ruta de tu dashboard
+        return "redirect:/integrantes/listado"; // ruta de tu dashboard
     }
-    
-      @PostMapping("/anuncio/eliminar")
+
+    @PostMapping("/anuncio/eliminar")
     public String eliminarAnuncio(@RequestParam("idAnuncio") Integer idAnuncio) {
         anuncioService.eliminar(idAnuncio);
-        return "redirect:/integrantes/listado";  // tu ruta del dashboard
+        return "redirect:/integrantes/listado"; // tu ruta del dashboard
     }
 
 }
-
-
