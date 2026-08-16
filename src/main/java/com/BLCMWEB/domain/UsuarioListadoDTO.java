@@ -8,16 +8,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import lombok.Data;
 
-/**
- *
- * @author peper
- */
 
-import java.io.Serializable;
-import java.time.LocalDate;
-import lombok.Data;
-
-
+@Data
 public class UsuarioListadoDTO implements Serializable {
     private static final long serialVersionUID = 1l;
     
@@ -47,93 +39,4 @@ public class UsuarioListadoDTO implements Serializable {
     
     
 
-    public Integer getCedula() {
-        return cedula;
-    }
-
-    public void setCedula(Integer cedula) {
-        this.cedula = cedula;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellidoPaterno() {
-        return apellidoPaterno;
-    }
-
-    public void setApellidoPaterno(String apellidoPaterno) {
-        this.apellidoPaterno = apellidoPaterno;
-    }
-
-    public String getApellidoMaterno() {
-        return apellidoMaterno;
-    }
-
-    public void setApellidoMaterno(String apellidoMaterno) {
-        this.apellidoMaterno = apellidoMaterno;
-    }
-
-    public String getNombreSeccion() {
-        return nombreSeccion;
-    }
-
-    public void setNombreSeccion(String nombreSeccion) {
-        this.nombreSeccion = nombreSeccion;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
-    public Integer getIdEstado() {
-        return idEstado;
-    }
-
-    public void setIdEstado(Integer idEstado) {
-        this.idEstado = idEstado;
-    }
-
-    public String getFechaIngreso() {
-        return fechaIngreso;
-    }
-
-    public void setFechaIngreso(String fechaIngreso) {
-        this.fechaIngreso = fechaIngreso;
-    }
-
-    public Integer getIdSeccion() {
-        return idSeccion;
-    }
-
-    public void setIdSeccion(Integer idSeccion) {
-        this.idSeccion = idSeccion;
-    }
-
-    public String getClave() {
-        return clave;
-    }
-
-    public void setClave(String clave) {
-        this.clave = clave;
-    }
-    
-    
 }

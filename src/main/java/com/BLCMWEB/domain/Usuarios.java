@@ -9,7 +9,7 @@ import lombok.Data;
 @Table(name = "BLCM_USUARIOS_TB")
 public class Usuarios implements Serializable {
     private static final long serialVersionUID = 1L;
-
+    
     @Id
     @Column(name = "CEDULA")
     private Integer cedula;

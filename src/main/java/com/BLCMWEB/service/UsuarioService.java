@@ -1,6 +1,7 @@
 package com.BLCMWEB.service;
 
 import com.BLCMWEB.domain.UsuarioListadoDTO;
+import com.BLCMWEB.domain.UsuarioLoginDTO;
 import com.BLCMWEB.domain.Usuarios;
 import com.BLCMWEB.repository.UsuarioRepository;
 import java.util.List;
@@ -43,5 +44,8 @@ public class UsuarioService {
 
     public void asignarRol(Integer cedula, Integer idRol) {
         usuarioRepository.asignarRol(cedula, idRol);
+    }
+    public UsuarioLoginDTO buscarPorCorreo(String correo) {
+        return usuarioRepository.buscarPorCorreo(correo);
     }
 }

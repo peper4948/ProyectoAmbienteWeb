@@ -36,36 +36,38 @@
                     <a class="nav-link" th:href="@{/secciones/listadoLideres}">Lideres de Seccion</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/secciones/listadoCajas}">Cajas</a>
+                <!-- Links de secciones: rutas genéricas por idSeccion.
+                     Ajustá los IDs según cómo quedaron sembradas tus secciones. -->
+                <li class="nav-item" th:classappend="${idSeccion == 1} ? 'active'">
+                    <a class="nav-link" th:href="@{/secciones/listado/1}">Cajas</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/secciones/listadoLiras}">Liras</a>
+                <li class="nav-item" th:classappend="${idSeccion == 4} ? 'active'">
+                    <a class="nav-link" th:href="@{/secciones/listado/4}">Liras</a>
                 </li>
 
-                <li class="nav-item active">
-                    <a class="nav-link" th:href="@{/secciones/listadoPrincipales}">Principales</a>
+                <li class="nav-item" th:classappend="${idSeccion == 8} ? 'active'">
+                    <a class="nav-link" th:href="@{/secciones/listado/8}">Principales</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/secciones/listadoBombos}">Bombos</a>
+                <li class="nav-item" th:classappend="${idSeccion == 2} ? 'active'">
+                    <a class="nav-link" th:href="@{/secciones/listado/2}">Bombos</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/secciones/listadoTenores}">Tenores</a>
+                <li class="nav-item" th:classappend="${idSeccion == 7} ? 'active'">
+                    <a class="nav-link" th:href="@{/secciones/listado/7}">Tenores</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/secciones/listadoGuiros}">Güiros</a>
+                <li class="nav-item" th:classappend="${idSeccion == 3} ? 'active'">
+                    <a class="nav-link" th:href="@{/secciones/listado/3}">Güiros</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/secciones/listadoFolclore}">Folclore</a>
+                <li class="nav-item" th:classappend="${idSeccion == 5} ? 'active'">
+                    <a class="nav-link" th:href="@{/secciones/listado/5}">Folclore</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/secciones/listadoColorGuard}">Color Guard</a>
+                <li class="nav-item" th:classappend="${idSeccion == 6} ? 'active'">
+                    <a class="nav-link" th:href="@{/secciones/listado/6}">Color Guard</a>
                 </li>
 
                 <div class="text-center d-none d-md-inline mt-4">
@@ -80,7 +82,10 @@
                             <div class="identity-overlay"></div>
                             <div class="identity-content">
                                 <h1>Banda Lírica Cantonal de Moravia</h1>
-                                <p class="identity-lema">Sección Principales — Timbales, Bongoes y Congas</p>
+                                <p class="identity-lema">
+                                    Sección
+                                    <span th:text="${nombreSeccion != null ? nombreSeccion : 'Principales'}">Principales</span>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -119,12 +124,12 @@
                             </div>
                         </div>
 
-                        <!-- Roster completo (conectado al backend) -->
+                        <!-- Roster completo (dinámico) -->
                         <div class="row">
                             <div class="col-lg-12 mb-4">
                                 <div class="card shadow">
                                     <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Roster completo — Principales</h6>
+                                        <h6 class="m-0 font-weight-bold text-primary">Roster completo</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
@@ -139,8 +144,8 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr th:each="integrante : ${integrantes}">
-                                                        <td th:text="${integrante.cedula}">—</td>
-                                                        <td th:text="${integrante.nombreCompleto}">—</td>
+                                                        <td th:text="${integrante.cedula}">0</td>
+                                                        <td th:text="${integrante.nombreCompleto}">Nombre</td>
                                                         <td>
                                                             <span th:if="${integrante.lider}" class="badge bg-primary">Líder</span>
                                                             <span th:unless="${integrante.lider}"
