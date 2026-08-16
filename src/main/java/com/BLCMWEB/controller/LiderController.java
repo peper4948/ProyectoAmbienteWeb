@@ -50,6 +50,7 @@ public class LiderController {
 
     @PostMapping("/asistencia/guardar")
     public String guardarAsistencia(@RequestParam("idEnsayo") Integer idEnsayo,
+            @RequestParam(value = "idSeccion", required = false) Integer idSeccion,
             @RequestParam Map<String, String> params,
             RedirectAttributes ra) {
         try {
@@ -65,25 +66,32 @@ public class LiderController {
             ex.printStackTrace();
             ra.addFlashAttribute("error", "Error al guardar la asistencia");
         }
-        return "redirect:/secciones/listadoLideres?idEnsayo=" + idEnsayo;
+        String redirect = "redirect:/secciones/listadoLideres?idEnsayo=" + idEnsayo;
+        if (idSeccion != null) {
+            redirect += "&idSeccion=" + idSeccion;
+        }
+        return redirect;
     }
 
     @PostMapping("/anuncio/guardar")
     public String guardarAnuncio(@RequestParam("cedula") Integer cedula,
+            @RequestParam("idSeccion") Integer idSeccion,
             @RequestParam("contenido") String contenido,
             RedirectAttributes ra) {
         try {
-            anuncioService.insertarAnuncio(cedula, contenido);
+            anuncioService.insertarAnuncio(cedula, idSeccion, contenido);
             ra.addFlashAttribute("todoOk", "Anuncio publicado correctamente");
         } catch (Exception ex) {
             ex.printStackTrace();
             ra.addFlashAttribute("error", "Error al publicar el anuncio");
         }
-        return "redirect:/secciones/listadoLideres";
+        return "redirect:/secciones/listadoLideres?idSeccion=" + idSeccion;
     }
 
     @PostMapping("/anuncio/eliminar")
-    public String eliminarAnuncio(@RequestParam("idAnuncio") Integer idAnuncio, RedirectAttributes ra) {
+    public String eliminarAnuncio(@RequestParam("idAnuncio") Integer idAnuncio,
+            @RequestParam(value = "idSeccion", required = false) Integer idSeccion,
+            RedirectAttributes ra) {
         try {
             anuncioService.eliminarAnuncio(idAnuncio);
             ra.addFlashAttribute("todoOk", "Anuncio eliminado correctamente");
@@ -91,6 +99,10 @@ public class LiderController {
             ex.printStackTrace();
             ra.addFlashAttribute("error", "Error al eliminar el anuncio");
         }
-        return "redirect:/secciones/listadoLideres";
+        String redirect = "redirect:/secciones/listadoLideres";
+        if (idSeccion != null) {
+            redirect += "?idSeccion=" + idSeccion;
+        }
+        return redirect;
     }
 }

@@ -7,7 +7,7 @@ public class AsistenciaMiembroDTO implements Serializable {
 
     private Integer cedula;
     private String nombreCompleto;
-    private Integer idEstadoAsistencia; // 20 Presente, 21 Ausente, 22 Justificado, null = sin marcar
+    private Integer idEstadoAsistencia; // 3 Presente, 4 Ausente, 5 Justificado, null = sin marcar
 
     public Integer getCedula() { return cedula; }
     public void setCedula(Integer cedula) { this.cedula = cedula; }
