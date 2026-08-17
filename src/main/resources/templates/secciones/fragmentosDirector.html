@@ -134,8 +134,7 @@
                                 <!-- ============ CRUD GALERÍA ============ -->
                                 <div class="tab-pane fade show active" id="pane-galeria" role="tabpanel">
                                     <div class="card shadow mb-4">
-                                        <div
-                                            class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                             <h6 class="m-0 font-weight-bold text-primary">Gestión de Galería</h6>
                                             <a th:href="@{/galeria/nuevo}" class="btn btn-primary btn-sm">
                                                 <i class="fas fa-plus"></i> Nueva imagen
@@ -143,8 +142,7 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table class="table table-bordered align-middle" width="100%"
-                                                       cellspacing="0">
+                                                <table class="table table-bordered align-middle" width="100%" cellspacing="0">
                                                     <thead>
                                                         <tr>
                                                             <th>ID</th>
@@ -166,16 +164,12 @@
                                                                 <i th:unless="${foto.url != null and !foto.url.isEmpty()}"
                                                                    class="fas fa-image fa-2x text-gray-300"></i>
                                                             </td>
-                                                            <td th:text="${foto.titulo}">Desfile cantonal 2025</td>
-                                                            <td style="text-transform:capitalize;" th:text="${foto.tipo}">
-                                                                Presentación</td>
-                                                            <td th:text="${#dates.format(foto.fecha, 'dd MMM yyyy')}">21 Jun
-                                                                2025</td>
+                                                            <td th:text="${foto.titulo}">Título</td>
+                                                            <td style="text-transform:capitalize;" th:text="${foto.tipo}">Categoría</td>
+                                                            <td th:text="${foto.fecha != null ? #dates.format(foto.fecha, 'dd MMM yyyy') : ''}">21 Jun 2025</td>
                                                             <td>
-                                                                <span th:if="${foto.idEstado == 1}"
-                                                                      class="badge bg-success">Activo</span>
-                                                                <span th:unless="${foto.idEstado == 1}"
-                                                                      class="badge bg-secondary">Inactivo</span>
+                                                                <span th:if="${foto.idEstado == 1}" class="badge bg-success">Activo</span>
+                                                                <span th:unless="${foto.idEstado == 1}" class="badge bg-secondary">Inactivo</span>
                                                             </td>
                                                             <td>
                                                                 <a th:href="@{/galeria/editar/{id}(id=${foto.idMedia})}"
@@ -183,20 +177,18 @@
                                                                     <i class="fas fa-edit"></i>
                                                                 </a>
                                                                 <form th:if="${foto.idEstado == 1}"
-                                                                      th:action="@{/galeria/eliminar}" method="post"
-                                                                      style="display:inline;">
-                                                                    <input type="hidden" name="idMedia"
-                                                                           th:value="${foto.idMedia}" />
+                                                                      th:action="@{/galeria/eliminar}" method="post" style="display:inline;">
+                                                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                                    <input type="hidden" name="idMedia" th:value="${foto.idMedia}"/>
                                                                     <button type="submit" class="btn btn-sm btn-danger"
                                                                             onclick="return confirm('¿Desactivar esta foto de la galería?');">
                                                                         <i class="fas fa-trash"></i>
                                                                     </button>
                                                                 </form>
                                                                 <form th:unless="${foto.idEstado == 1}"
-                                                                      th:action="@{/galeria/activar}" method="post"
-                                                                      style="display:inline;">
-                                                                    <input type="hidden" name="idMedia"
-                                                                           th:value="${foto.idMedia}" />
+                                                                      th:action="@{/galeria/activar}" method="post" style="display:inline;">
+                                                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                                    <input type="hidden" name="idMedia" th:value="${foto.idMedia}"/>
                                                                     <button type="submit" class="btn btn-sm btn-success">
                                                                         <i class="fas fa-rotate-left"></i>
                                                                     </button>
@@ -204,8 +196,7 @@
                                                             </td>
                                                         </tr>
                                                         <tr th:if="${galeriaFotos == null or #lists.isEmpty(galeriaFotos)}">
-                                                            <td colspan="7" class="text-center text-muted">Aún no hay fotos
-                                                                en la galería.</td>
+                                                            <td colspan="7" class="text-center text-muted">Aún no hay fotos en la galería.</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -726,6 +717,7 @@
             </div>
         </section>
 
+        <!-- Refleja visualmente el estado del switch de audiciones -->
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const sw = document.getElementById("switchAudiciones");
