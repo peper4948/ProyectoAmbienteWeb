@@ -121,6 +121,12 @@
                                         <i class="fas fa-calendar-day me-1"></i> Ensayos
                                     </button>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="tab-calendario" data-bs-toggle="tab"
+                                            data-bs-target="#pane-calendario" type="button" role="tab">
+                                        <i class="fas fa-calendar-alt me-1"></i> Calendario
+                                    </button>
+                                </li>
                             </ul>
 
                             <div class="tab-content" id="directorTabsContent">
@@ -128,15 +134,17 @@
                                 <!-- ============ CRUD GALERÍA ============ -->
                                 <div class="tab-pane fade show active" id="pane-galeria" role="tabpanel">
                                     <div class="card shadow mb-4">
-                                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                        <div
+                                            class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                             <h6 class="m-0 font-weight-bold text-primary">Gestión de Galería</h6>
-                                            <button type="button" class="btn btn-primary btn-sm" disabled>
+                                            <a th:href="@{/galeria/nuevo}" class="btn btn-primary btn-sm">
                                                 <i class="fas fa-plus"></i> Nueva imagen
-                                            </button>
+                                            </a>
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table class="table table-bordered align-middle" width="100%" cellspacing="0">
+                                                <table class="table table-bordered align-middle" width="100%"
+                                                       cellspacing="0">
                                                     <thead>
                                                         <tr>
                                                             <th>ID</th>
@@ -149,41 +157,55 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td>1</td>
-                                                            <td><i class="fas fa-image fa-2x text-gray-300"></i></td>
-                                                            <td>Desfile cantonal 2025</td>
-                                                            <td>Presentaciones</td>
-                                                            <td>21 Jun 2025</td>
-                                                            <td><span class="badge bg-success">Activo</span></td>
+                                                        <tr th:each="foto : ${galeriaFotos}">
+                                                            <td th:text="${foto.idMedia}">1</td>
                                                             <td>
-                                                                <button class="btn btn-sm btn-warning" disabled><i class="fas fa-edit"></i></button>
-                                                                <button class="btn btn-sm btn-danger" disabled><i class="fas fa-trash"></i></button>
+                                                                <img th:if="${foto.url != null and !foto.url.isEmpty()}"
+                                                                     th:src="@{${foto.url}}" alt="miniatura"
+                                                                     style="width:56px;height:56px;object-fit:cover;border-radius:8px;">
+                                                                <i th:unless="${foto.url != null and !foto.url.isEmpty()}"
+                                                                   class="fas fa-image fa-2x text-gray-300"></i>
+                                                            </td>
+                                                            <td th:text="${foto.titulo}">Desfile cantonal 2025</td>
+                                                            <td style="text-transform:capitalize;" th:text="${foto.tipo}">
+                                                                Presentación</td>
+                                                            <td th:text="${#dates.format(foto.fecha, 'dd MMM yyyy')}">21 Jun
+                                                                2025</td>
+                                                            <td>
+                                                                <span th:if="${foto.idEstado == 1}"
+                                                                      class="badge bg-success">Activo</span>
+                                                                <span th:unless="${foto.idEstado == 1}"
+                                                                      class="badge bg-secondary">Inactivo</span>
+                                                            </td>
+                                                            <td>
+                                                                <a th:href="@{/galeria/editar/{id}(id=${foto.idMedia})}"
+                                                                   class="btn btn-sm btn-warning">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                                <form th:if="${foto.idEstado == 1}"
+                                                                      th:action="@{/galeria/eliminar}" method="post"
+                                                                      style="display:inline;">
+                                                                    <input type="hidden" name="idMedia"
+                                                                           th:value="${foto.idMedia}" />
+                                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                                            onclick="return confirm('¿Desactivar esta foto de la galería?');">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                                <form th:unless="${foto.idEstado == 1}"
+                                                                      th:action="@{/galeria/activar}" method="post"
+                                                                      style="display:inline;">
+                                                                    <input type="hidden" name="idMedia"
+                                                                           th:value="${foto.idMedia}" />
+                                                                    <button type="submit" class="btn btn-sm btn-success">
+                                                                        <i class="fas fa-rotate-left"></i>
+                                                                    </button>
+                                                                </form>
                                                             </td>
                                                         </tr>
-                                                        <tr>
-                                                            <td>2</td>
-                                                            <td><i class="fas fa-image fa-2x text-gray-300"></i></td>
-                                                            <td>Ensayo general</td>
-                                                            <td>Ensayos</td>
-                                                            <td>15 Jun 2025</td>
-                                                            <td><span class="badge bg-success">Activo</span></td>
-                                                            <td>
-                                                                <button class="btn btn-sm btn-warning" disabled><i class="fas fa-edit"></i></button>
-                                                                <button class="btn btn-sm btn-danger" disabled><i class="fas fa-trash"></i></button>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>3</td>
-                                                            <td><i class="fas fa-image fa-2x text-gray-300"></i></td>
-                                                            <td>Retreta municipal</td>
-                                                            <td>Presentaciones</td>
-                                                            <td>05 May 2025</td>
-                                                            <td><span class="badge bg-secondary">Inactivo</span></td>
-                                                            <td>
-                                                                <button class="btn btn-sm btn-warning" disabled><i class="fas fa-edit"></i></button>
-                                                                <button class="btn btn-sm btn-danger" disabled><i class="fas fa-trash"></i></button>
-                                                            </td>
+                                                        <tr th:if="${galeriaFotos == null or #lists.isEmpty(galeriaFotos)}">
+                                                            <td colspan="7" class="text-center text-muted">Aún no hay fotos
+                                                                en la galería.</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -475,6 +497,67 @@
                                     </div>
                                 </div>
 
+                                <!-- ============ CRUD CALENDARIO ============ -->
+                                <div class="tab-pane fade" id="pane-calendario" role="tabpanel">
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                            <h6 class="m-0 font-weight-bold text-primary">Gestión del Calendario</h6>
+                                            <button type="button" class="btn btn-primary btn-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#modalNuevoEvento">
+                                                <i class="fas fa-plus"></i> Agregar evento
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered align-middle" width="100%" cellspacing="0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>ID</th>
+                                                            <th>Fecha</th>
+                                                            <th>Lugar</th>
+                                                            <th>Descripción</th>
+                                                            <th>Estado</th>
+                                                            <th>Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr th:each="evento : ${eventos}">
+                                                            <td th:text="${evento.idCalendario}">1</td>
+                                                            <td th:text="${evento.fecha != null ? #temporals.format(evento.fecha, 'dd/MM/yyyy') : '—'}">01/01/2026</td>
+                                                            <td th:text="${evento.lugar}">Lugar</td>
+                                                            <td th:text="${evento.descripcion}">Descripción</td>
+                                                            <td>
+                                                                <span th:if="${evento.idEstado != null and evento.idEstado == 1}" class="badge bg-success">Activo</span>
+                                                                <span th:if="${evento.idEstado == null or evento.idEstado != 1}" class="badge bg-secondary">Inactivo</span>
+                                                            </td>
+                                                            <td>
+                                                                <button type="button" class="btn btn-sm btn-info text-white"
+                                                                        data-bs-toggle="modal"
+                                                                        th:data-bs-target="'#modalEditar' + ${evento.idCalendario}">
+                                                                    <i class="fas fa-pen"></i>
+                                                                </button>
+                                                                <form th:if="${evento.idEstado != null and evento.idEstado == 1}"
+                                                                      th:action="@{/secciones/listadoCalendario/eliminar/{id}(id=${evento.idCalendario})}"
+                                                                      method="post" class="d-inline"
+                                                                      onsubmit="return confirm('¿Desactivar este evento?');">
+                                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                            </td>
+                                                        </tr>
+                                                        <tr th:if="${#lists.isEmpty(eventos)}">
+                                                            <td colspan="6" class="text-center text-muted">
+                                                                Todavía no hay eventos registrados en el calendario.
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -535,6 +618,93 @@
                 }
             </script>
 
+            <!-- ============ MODAL: Nuevo evento calendario ============ -->
+            <div class="modal fade" id="modalNuevoEvento" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{/secciones/calendario/guardar}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <div class="modal-header">
+                                <h5 class="modal-title font-weight-bold text-primary">Nuevo evento</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Fecha</label>
+                                    <input type="date" class="form-control" name="fecha" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Lugar</label>
+                                    <input type="text" class="form-control" name="lugar" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Descripción</label>
+                                    <textarea class="form-control" name="descripcion" rows="3" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Tipo</label>
+                                    <select class="form-control" name="tipoEvento">
+                                        <option value="presentacion">Presentación</option>
+                                        <option value="competencia">Competencia</option>
+                                    </select>
+                                </div>
+                                <input type="hidden" name="idEstado" value="1">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ MODALES: Editar evento (uno por evento) ============ -->
+            <div class="modal fade" th:each="evento : ${eventos}" th:id="'modalEditar' + ${evento.idCalendario}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{/secciones/calendario/guardar}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" name="idCalendario" th:value="${evento.idCalendario}">
+                            <div class="modal-header">
+                                <h5 class="modal-title font-weight-bold text-primary">Editar evento</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Fecha</label>
+                                    <input type="date" class="form-control" name="fecha"
+                                           th:value="${evento.fecha != null ? #temporals.format(evento.fecha, 'yyyy-MM-dd') : ''}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Lugar</label>
+                                    <input type="text" class="form-control" name="lugar" th:value="${evento.lugar}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Descripción</label>
+                                    <textarea class="form-control" name="descripcion" rows="3" th:text="${evento.descripcion}" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Tipo</label>
+                                    <select class="form-control" name="tipoEvento">
+                                        <option value="presentacion" th:selected="${evento.tipoEvento == 'presentacion'}">Presentación</option>
+                                        <option value="competencia" th:selected="${evento.tipoEvento == 'competencia'}">Competencia</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Estado (1 = Activo, 0 = Inactivo)</label>
+                                    <input type="number" class="form-control" name="idEstado" th:value="${evento.idEstado}" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -556,7 +726,6 @@
             </div>
         </section>
 
-        <!-- Refleja visualmente el estado del switch de audiciones -->
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const sw = document.getElementById("switchAudiciones");

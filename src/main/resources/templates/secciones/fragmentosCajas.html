@@ -4,6 +4,142 @@
 <body>
 
     <section th:fragment="Page-Wrapper">
+        <style>
+            /* Anuncios */
+            .anuncios-seccion { display: flex; flex-direction: column; gap: .8rem; }
+            .anuncio-seccion-box {
+                background: #fff;
+                border-left: 4px solid #8a14ff;
+                border-radius: 12px;
+                padding: .85rem 1.1rem;
+                box-shadow: 0 2px 8px rgba(0,0,0,.05);
+                transition: transform .15s ease, box-shadow .15s ease;
+            }
+            .anuncio-seccion-box:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(138,20,255,.15);
+            }
+            .anuncio-seccion-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: .4rem;
+            }
+            .anuncio-seccion-autor { font-weight: 700; color: #4e1abf; }
+            .anuncio-seccion-fecha { font-size: .8rem; color: #9aa0ac; }
+            .anuncio-seccion-cuerpo { color: #3a3b45; line-height: 1.5; }
+
+            /* Ensayos */
+            .ensayos-seccion { display: flex; flex-direction: column; gap: .7rem; }
+            .ensayo-seccion-item {
+                display: flex;
+                align-items: center;
+                gap: .9rem;
+                padding: .7rem .9rem;
+                border-radius: 12px;
+                background: #faf8ff;
+                transition: background .15s ease;
+            }
+            .ensayo-seccion-item:hover { background: #f2ecff; }
+            .ensayo-seccion-fecha {
+                flex-shrink: 0;
+                width: 52px;
+                text-align: center;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 6px rgba(138,20,255,.18);
+            }
+            .ensayo-seccion-fecha .ens-mes {
+                display: block;
+                background: linear-gradient(135deg, #8a14ff 0%, #4e1abf 100%);
+                color: #fff;
+                font-size: .62rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                padding: 2px 0;
+            }
+            .ensayo-seccion-fecha .ens-dia {
+                display: block;
+                background: #fff;
+                color: #3a3b45;
+                font-size: 1.15rem;
+                font-weight: 800;
+                padding: 2px 0;
+            }
+            .ensayo-seccion-info .ens-lugar { font-weight: 600; color: #3a3b45; }
+            .ensayo-seccion-info .ens-sub { font-size: .8rem; color: #9aa0ac; text-transform: capitalize; }
+
+            /* Fix visibilidad de los tabs */
+            #seccionTabs .nav-link {
+                color: #4e1abf;
+                background: transparent;
+                border: 1px solid transparent;
+                font-weight: 600;
+            }
+            #seccionTabs .nav-link:hover {
+                color: #8a14ff;
+                border-color: #e0d6f5;
+            }
+            #seccionTabs .nav-link.active {
+                color: #8a14ff;
+                background: #fff;
+                border-color: #dee2e6 #dee2e6 #fff;
+                border-bottom: 2px solid #8a14ff;
+            }
+
+            /* Tarjeta del líder */
+            .lider-card {
+                background: #fff;
+                border-radius: 16px;
+                padding: 1.8rem 1.5rem;
+                text-align: center;
+                box-shadow: 0 4px 16px rgba(0,0,0,.07);
+                border-top: 4px solid #8a14ff;
+                transition: transform .18s ease, box-shadow .18s ease;
+            }
+            .lider-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 26px rgba(138,20,255,.2);
+            }
+            .lider-avatar {
+                width: 76px;
+                height: 76px;
+                margin: 0 auto 1rem;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #8a14ff 0%, #4e1abf 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                font-size: 1.8rem;
+            }
+            .lider-nombre { font-size: 1.15rem; font-weight: 800; color: #3a3b45; }
+            .lider-rol {
+                display: inline-block;
+                font-size: .72rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .05em;
+                color: #8a14ff;
+                background: rgba(138,20,255,.1);
+                padding: .25em .8em;
+                border-radius: 999px;
+                margin: .4rem 0 1rem;
+            }
+            .lider-datos { text-align: left; border-top: 1px solid #f0edf7; padding-top: 1rem; }
+            .lider-dato {
+                display: flex;
+                align-items: center;
+                gap: .6rem;
+                margin-bottom: .5rem;
+                color: #555;
+                font-size: .9rem;
+            }
+            .lider-dato i { color: #8a14ff; width: 18px; text-align: center; }
+            .lider-dato a { color: #4e1abf; text-decoration: none; }
+            .lider-dato a:hover { text-decoration: underline; }
+        </style>
+
         <div id="wrapper">
             <ul class="navbar-nav-blcm bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
                 <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/inicio/listado}">
@@ -31,39 +167,30 @@
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/secciones/listadoDirector}">Director</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/secciones/listadoLideres}">Lideres de Seccion</a>
                 </li>
-
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" th:href="@{/secciones/listadoCajas}">Cajas</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/secciones/listadoLiras}">Liras</a>
                 </li>
-
-                <li class="nav-item active">
+                <li class="nav-item">
                     <a class="nav-link" th:href="@{/secciones/listadoPrincipales}">Principales</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/secciones/listadoBombos}">Bombos</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/secciones/listadoTenores}">Tenores</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/secciones/listadoGuiros}">Güiros</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/secciones/listadoFolclore}">Folclore</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/secciones/listadoColorGuard}">Color Guard</a>
                 </li>
@@ -87,7 +214,7 @@
 
                     <div class="container-fluid">
 
-                        <!-- Resumen de la sección -->
+                        <!-- Resumen (fuera de los tabs, como header) -->
                         <div class="row">
                             <div class="col-lg-3 col-md-6 mb-4">
                                 <div class="card border-left-primary shadow h-100 py-2">
@@ -119,10 +246,39 @@
                             </div>
                         </div>
 
-                        <!-- Roster completo (conectado al backend) -->
-                        <div class="row">
-                            <div class="col-lg-12 mb-4">
-                                <div class="card shadow">
+                        <!-- ===================== TABS ===================== -->
+                        <ul class="nav nav-tabs mb-4" id="seccionTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="tab-roster" data-bs-toggle="tab"
+                                        data-bs-target="#pane-roster" type="button" role="tab">
+                                    <i class="fas fa-users me-1"></i> Roster
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-anuncios" data-bs-toggle="tab"
+                                        data-bs-target="#pane-anuncios" type="button" role="tab">
+                                    <i class="fas fa-bullhorn me-1"></i> Anuncios
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-ensayos" data-bs-toggle="tab"
+                                        data-bs-target="#pane-ensayos" type="button" role="tab">
+                                    <i class="fas fa-calendar-day me-1"></i> Ensayos
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-lider" data-bs-toggle="tab"
+                                        data-bs-target="#pane-lider" type="button" role="tab">
+                                    <i class="fas fa-user-tie me-1"></i> Líder
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="seccionTabsContent">
+
+                            <!-- ============ ROSTER ============ -->
+                            <div class="tab-pane fade show active" id="pane-roster" role="tabpanel">
+                                <div class="card shadow mb-4">
                                     <div class="card-header py-3">
                                         <h6 class="m-0 font-weight-bold text-primary">Roster completo — Cajas</h6>
                                     </div>
@@ -152,7 +308,6 @@
                                                                   th:text="${integrante.nombreEstado != null ? integrante.nombreEstado : 'Inactivo'}">Inactivo</span>
                                                         </td>
                                                     </tr>
-
                                                     <tr th:if="${#lists.isEmpty(integrantes)}">
                                                         <td colspan="4" class="text-center text-muted">
                                                             Esta sección todavía no tiene integrantes registrados.
@@ -164,6 +319,109 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- ============ ANUNCIOS ============ -->
+                            <div class="tab-pane fade" id="pane-anuncios" role="tabpanel">
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">
+                                            <i class="fas fa-bullhorn me-2"></i>Anuncios de la sección
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="anuncios-seccion">
+                                            <div class="anuncio-seccion-box" th:each="anuncio : ${anuncios}">
+                                                <div class="anuncio-seccion-head">
+                                                    <span class="anuncio-seccion-autor">
+                                                        <i class="fas fa-user-circle me-1"></i>
+                                                        <span th:text="${anuncio.autorNombre}">Autor</span>
+                                                    </span>
+                                                    <span class="anuncio-seccion-fecha"
+                                                          th:text="${anuncio.fecha != null ? #dates.format(anuncio.fecha, 'dd MMM yyyy') : ''}">01 Ene 2026</span>
+                                                </div>
+                                                <div class="anuncio-seccion-cuerpo" th:text="${anuncio.contenido}">
+                                                    Contenido del anuncio.
+                                                </div>
+                                            </div>
+                                            <div class="text-center text-muted py-3"
+                                                 th:if="${anuncios == null or #lists.isEmpty(anuncios)}">
+                                                No hay anuncios para esta sección.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ============ ENSAYOS ============ -->
+                            <div class="tab-pane fade" id="pane-ensayos" role="tabpanel">
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">
+                                            <i class="fas fa-calendar-day me-2"></i>Próximos ensayos
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="ensayos-seccion">
+                                            <div class="ensayo-seccion-item" th:each="ensayo : ${ensayos}">
+                                                <div class="ensayo-seccion-fecha">
+                                                    <span class="ens-mes" th:text="${ensayo.fecha != null ? #dates.format(ensayo.fecha, 'MMM') : '---'}">Jul</span>
+                                                    <span class="ens-dia" th:text="${ensayo.fecha != null ? #dates.format(ensayo.fecha, 'dd') : '--'}">04</span>
+                                                </div>
+                                                <div class="ensayo-seccion-info">
+                                                    <div class="ens-lugar" th:text="${ensayo.lugar}">Salón comunal</div>
+                                                    <div class="ens-sub" th:text="${ensayo.fecha != null ? #dates.format(ensayo.fecha, 'EEEE, dd MMM yyyy') : ''}">Viernes, 04 Jul 2026</div>
+                                                </div>
+                                            </div>
+                                            <div class="text-center text-muted py-3"
+                                                 th:if="${ensayos == null or #lists.isEmpty(ensayos)}">
+                                                No hay ensayos programados.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ============ LÍDER ============ -->
+                            <div class="tab-pane fade" id="pane-lider" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-lg-5 col-md-7 mb-4" th:each="lider : ${lideresSeccion}">
+                                        <div class="lider-card">
+                                            <div class="lider-avatar">
+                                                <i class="fas fa-user-tie"></i>
+                                            </div>
+                                            <div class="lider-nombre"
+                                                 th:text="${lider.nombre + ' ' + lider.apellidoPaterno + (lider.apellidoMaterno != null ? ' ' + lider.apellidoMaterno : '')}">
+                                                Nombre del líder
+                                            </div>
+                                            <div class="lider-rol">Líder de sección</div>
+                                            <div class="lider-datos">
+                                                <div class="lider-dato">
+                                                    <i class="fas fa-id-card"></i>
+                                                    <span th:text="${lider.cedula}">000000000</span>
+                                                </div>
+                                                <div class="lider-dato" th:if="${lider.correo != null}">
+                                                    <i class="fas fa-envelope"></i>
+                                                    <a th:href="'mailto:' + ${lider.correo}" th:text="${lider.correo}">correo@banda.com</a>
+                                                </div>
+                                                <div class="lider-dato" th:if="${lider.telefono != null}">
+                                                    <i class="fas fa-phone"></i>
+                                                    <span th:text="${lider.telefono}">0000-0000</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12" th:if="${lideresSeccion == null or #lists.isEmpty(lideresSeccion)}">
+                                        <div class="card shadow">
+                                            <div class="card-body text-center text-muted py-4">
+                                                <i class="fas fa-user-slash fa-2x mb-2 d-block"></i>
+                                                Esta sección todavía no tiene un líder asignado.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

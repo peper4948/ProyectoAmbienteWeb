@@ -49,9 +49,20 @@
     </div>
 
 </section>
+
 <th:block th:fragment="scripts">
-    <script>
-        const eventos = [];
+    <script th:inline="javascript">
+        // ===== Eventos reales desde la BD (Thymeleaf los inyecta) =====
+        const eventos = [
+            /*[# th:each="evento : ${eventos}"]*/
+            {
+                fecha:  /*[[${evento.fecha}]]*/            '2026-01-01',
+                titulo: /*[[${evento.descripcion}]]*/      'Evento',
+                lugar:  /*[[${evento.lugar}]]*/             'Lugar',
+                tipo:   /*[[${evento.tipoEvento != null ? evento.tipoEvento : 'presentacion'}]]*/ 'presentacion'
+            },
+            /*[/]*/
+        ];
 
         const DIAS  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
         const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
@@ -125,6 +136,7 @@
             });
         }
 
+        // ===== Slider de próximos eventos =====
         let sliderIdx = 0;
         let proximosCache = [];
         const VISIBLE = 3;

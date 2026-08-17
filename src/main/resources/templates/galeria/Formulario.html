@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body>
+        <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+            <div class="card shadow" style="max-width: 520px; width: 100%;">
+                <div class="card-body p-4">
+                    <h4 class="text-center mb-4" style="font-weight:700;"
+                        th:text="${foto.idMedia == null ? 'Nueva foto de Galería' : 'Editar foto de Galería'}">Formulario de Galería</h4>
+
+                    <form th:action="@{/galeria/guardar}" th:object="${foto}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" th:field="*{idMedia}" />
+
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="titulo" th:field="*{titulo}" maxlength="120" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tipo" class="form-label">Categoría</label>
+                            <select class="form-select" id="tipo" th:field="*{tipo}" required>
+                                <option value="" disabled th:selected="${foto.tipo == null}">-- Selecciona una categoría --</option>
+                                <option value="desfile">Desfile</option>
+                                <option value="presentacion">Presentación</option>
+                                <option value="competencia">Competencia</option>
+                                <option value="ensayo">Ensayo</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" th:if="${foto.idMedia != null and foto.url != null and !foto.url.isEmpty()}">
+                            <label class="form-label d-block">Imagen actual</label>
+                            <img th:src="@{${foto.url}}" alt="Imagen actual"
+                                 style="max-width:100%; max-height:220px; border-radius:12px; object-fit:cover;">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="archivo" class="form-label"
+                                   th:text="${foto.idMedia == null ? 'Imagen' : 'Reemplazar imagen (opcional)'}">Imagen</label>
+                            <input type="file" class="form-control" id="archivo" name="archivo" accept="image/*"
+                                   th:required="${foto.idMedia == null}">
+                            <small class="form-text text-muted">Formatos de imagen (JPG, PNG, WEBP...). Máximo 10 MB.</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="idEstado" class="form-label">Estado</label>
+                            <select class="form-select" id="idEstado" th:field="*{idEstado}" required>
+                                <option value="1">Activo (visible en la galería)</option>
+                                <option value="2">Inactivo (oculto)</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-center gap-3">
+                            <a th:href="@{/secciones/listadoDirector}" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-blcm">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

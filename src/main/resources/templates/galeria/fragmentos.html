@@ -1,4 +1,3 @@
-<!-- ENCABEZADO DE PÁGINA -->
 <section th:fragment="header-pagina">
     <div class="page-header">
         <h1>Galería</h1>
@@ -66,30 +65,28 @@
     </div>
 </section>
 <th:block th:fragment="scripts">
-    <script>
+    <script th:inline="javascript">
         /* ============================================================
          DATOS DE FOTOS
-         Cuando tengas las fotos, agrega la ruta en "src".
+         Vienen de la base de datos (CRUD de Galería, panel del Director).
          Si "src" está vacío se muestra el placeholder automáticamente.
-     
+
          categoria: 'desfile' | 'presentacion' | 'competencia' | 'ensayo'
-         altura: 'corta' | 'media' | 'alta'  (para variar el grid)
+         altura: 'corta' | 'media' | 'alta'  (para variar el grid, se asigna
+         de forma rotativa ya que no se guarda en la base de datos)
          ============================================================ */
-        const fotos = [
-            {src: '', titulo: 'Desfile del 15 de setiembre', categoria: 'desfile', altura: 'media', desc: 'Moravia, 2025'},
-            {src: '', titulo: 'Festival de la luz', categoria: 'presentacion', altura: 'alta', desc: 'San José, 2025'},
-            {src: '', titulo: 'WAMSB 2025', categoria: 'competencia', altura: 'corta', desc: 'Alajuela, 2025'},
-            {src: '', titulo: 'Ensayo general', categoria: 'ensayo', altura: 'media', desc: 'Sede BLCM, 2025'},
-            {src: '', titulo: 'Guatemala', categoria: 'desfile', altura: 'alta', desc: 'Moravia, 2024'},
-            {src: '', titulo: 'Presentación navideña', categoria: 'presentacion', altura: 'corta', desc: 'Teatro Nacional, 2024'},
-            {src: '', titulo: 'WAMSB 2024', categoria: 'competencia', altura: 'media', desc: 'Cartago, 2024'},
-            {src: '', titulo: 'Ensayo de percusión', categoria: 'ensayo', altura: 'corta', desc: 'Sede BLCM, 2024'},
-            {src: '', titulo: 'Desfile de Moravia', categoria: 'desfile', altura: 'media', desc: 'Moravia, 2024'},
-            {src: '', titulo: 'Aniversario #2 BLCM', categoria: 'presentacion', altura: 'alta', desc: 'BLCM, 2024'},
-            {src: '', titulo: 'wamsb color guard indoor', categoria: 'competencia', altura: 'corta', desc: 'La Fortuna, 2024'},
-            {src: '', titulo: 'wamsb cadencias', categoria: 'competencia', altura: 'corta', desc: 'La Fortuna, 2024'},
-            {src: '', titulo: 'Ensayo liras', categoria: 'ensayo', altura: 'media', desc: 'Sede BLCM, 2025'},
-        ];
+        const datosGaleria = /*[[${galeriaFotos}]]*/ [];
+        const alturasCiclo = ['media', 'alta', 'corta'];
+
+        const fotos = (datosGaleria || []).map(function (f, idx) {
+            return {
+                src: f.url || '',
+                titulo: f.titulo || '',
+                categoria: f.tipo || '',
+                altura: alturasCiclo[idx % alturasCiclo.length],
+                desc: ''
+            };
+        });
 
         /* ── Gradientes placeholder por categoría ── */
         const gradientes = {

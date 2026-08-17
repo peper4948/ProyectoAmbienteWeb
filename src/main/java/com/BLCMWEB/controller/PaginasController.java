@@ -17,6 +17,8 @@ import com.BLCMWEB.domain.UsuarioLoginDTO;
 import com.BLCMWEB.domain.EnsayoListadoDTO;
 import com.BLCMWEB.domain.AsistenciaMiembroDTO;
 import com.BLCMWEB.repository.UsuarioRepository;
+import com.BLCMWEB.service.CalendarioService;
+import com.BLCMWEB.service.GaleriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -71,6 +73,11 @@ public class PaginasController {
 
     @Autowired
     private AnuncioService anuncioService;
+    @Autowired
+    private GaleriaService galeriaService;
+    
+        @Autowired
+    private CalendarioService calendarioService;
 
     @GetMapping({"/", "/inicio/listado"})
     public String inicio() {
@@ -79,11 +86,12 @@ public class PaginasController {
 
     @GetMapping("/calendario/listado")
     public String calendario() {
-        return "calendario/listado";
+        return "redirect:/secciones/listadoCalendario";
     }
 
     @GetMapping("/galeria/listado")
-    public String galeria() {
+    public String galeria(Model model) {
+        model.addAttribute("galeriaFotos", galeriaService.listarActivas());
         return "galeria/listado";
     }
 
@@ -121,6 +129,11 @@ public String integrantes(Model model) {
     model.addAttribute("totalSecciones", totalSecciones);
     model.addAttribute("anuncios", anuncioService.listar());
     model.addAttribute("ensayos", ensayoService.listarEnsayos());
+    var proximoEvento = calendarioService.obtenerProximoEvento();
+    if (proximoEvento != null) {
+        model.addAttribute("fechaEvento", proximoEvento.getFecha().toString());
+        model.addAttribute("nombreEvento", proximoEvento.getDescripcion());
+    }
     return "integrantes/listado";
 }
     @GetMapping("/secciones/listadoDirector")
@@ -136,6 +149,7 @@ public String integrantes(Model model) {
         model.addAttribute("direcciones", direccionService.readAllDireccion());
         model.addAttribute("estados", estadoService.readAllEstado());
         model.addAttribute("ensayos", ensayoService.listarEnsayos());
+        model.addAttribute("galeriaFotos", galeriaService.listarTodas());
 
         var lideres = liderService.listarLideres();
         model.addAttribute("lideres", lideres);
@@ -207,16 +221,7 @@ public String lideres(Model model, Authentication auth,
     return "secciones/listadoLideres";
 }
 
-@GetMapping("/secciones/listadoPrincipales")
-public String principales(Model model) {
-    Long idPrincipales = 5L;   // era 8L
-    model.addAttribute("integrantes", seccionRosterService.listarPorSeccion(idPrincipales));
-    model.addAttribute("total", seccionRosterService.total(
-            seccionRosterService.listarPorSeccion(idPrincipales)));
-    model.addAttribute("totalActivos", seccionRosterService.totalActivos(
-            seccionRosterService.listarPorSeccion(idPrincipales)));
-    return "secciones/listadoPrincipales";
-}
+
     @GetMapping("/acceso_denegado")
     public String accesoDenegado() {
         return "acceso_denegado";
@@ -224,13 +229,27 @@ public String principales(Model model) {
 
     
     
-    private void cargarSeccion(Model model, Long idSeccion) {
-        var integrantes = seccionRosterService.listarPorSeccion(idSeccion);
-        model.addAttribute("integrantes", integrantes);
-        model.addAttribute("total", seccionRosterService.total(integrantes));
-        model.addAttribute("totalActivos", seccionRosterService.totalActivos(integrantes));
-    }
+private void cargarSeccion(Model model, Long idSeccion) {
+    var integrantes = seccionRosterService.listarPorSeccion(idSeccion);
+    model.addAttribute("integrantes", integrantes);
+    model.addAttribute("total", seccionRosterService.total(integrantes));
+    model.addAttribute("totalActivos", seccionRosterService.totalActivos(integrantes));
+    model.addAttribute("anuncios", anuncioService.listarPorSeccion(idSeccion.intValue()));
+    model.addAttribute("ensayos", ensayoService.listarEnsayos());
+
+    var lideresSeccion = liderService.listarLideres().stream()
+            .filter(l -> l.getIdSeccion() != null && l.getIdSeccion().equals(idSeccion.intValue()))
+            .filter(l -> l.getIdEstado() != null && l.getIdEstado() == 1)
+            .toList();
+    model.addAttribute("lideresSeccion", lideresSeccion);
+}
     
+    @GetMapping("/secciones/listadoPrincipales")
+    public String principales(Model model) {
+        cargarSeccion(model, 5L);
+
+        return "secciones/listadoPrincipales";
+    }
     
      @GetMapping("/secciones/listadoLiras")
     public String liras(Model model) {

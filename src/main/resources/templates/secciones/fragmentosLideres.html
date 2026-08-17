@@ -7,72 +7,63 @@
         <section th:fragment="Page-Wrapper">
             <div id="wrapper">
                 <ul class="navbar-nav-blcm bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-                    <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/inicio/listado}">
-                        <div class="sidebar">
-                            <i class="fas fa-laugh-wink"></i>
-                        </div>
-                        <div class="sidebar-brand-text mx-3">BLCM</div>
-                    </a>
-
-                    <hr class="sidebar-divider my-0">
-
-                    <a href="#" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                        Salir
-                    </a>
-
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/integrantes/listado}">
-                            <i class="fas fa-fw"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-
-                    <hr class="sidebar-divider">
-
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/secciones/listadoDirector}">Director</a>
-                    </li>
-
-                    <li class="nav-item active">
-                        <a class="nav-link" th:href="@{/secciones/listadoLideres}">Lideres de Seccion</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="ya casi">Cajas</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="ya casi">Liras</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/secciones/listadoPrincipales}">Principales</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="ya casi">Bombos</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="ya casi">Tenores</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="ya casi">Güiros</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="ya casi">Folclore</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="ya casi">Color Guard</a>
-                    </li>
-
-                    <div class="text-center d-none d-md-inline mt-4">
-                        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+                <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/inicio/listado}">
+                    <div class="sidebar">
+                        <i class="fas fa-laugh-wink"></i>
                     </div>
-                </ul>
+                    <div class="sidebar-brand-text mx-3">BLCM</div>
+                </a>
+
+                <hr class="sidebar-divider my-0">
+
+                <a href="#" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                    Salir
+                </a>
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/integrantes/listado}">
+                        <i class="fas fa-fw"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                <hr class="sidebar-divider">
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/secciones/listadoDirector}">Director</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/secciones/listadoLideres}">Lideres de Seccion</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/secciones/listadoCajas}">Cajas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/secciones/listadoLiras}">Liras</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/secciones/listadoPrincipales}">Principales</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/secciones/listadoBombos}">Bombos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/secciones/listadoTenores}">Tenores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/secciones/listadoGuiros}">Güiros</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/secciones/listadoFolclore}">Folclore</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" th:href="@{/secciones/listadoColorGuard}">Color Guard</a>
+                </li>
+
+                <div class="text-center d-none d-md-inline mt-4">
+                    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+                </div>
+            </ul>
 
                 <div id="content-wrapper" class="d-flex flex-column">
                     <div id="content">

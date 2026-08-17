@@ -21,14 +21,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF: ignorar el endpoint de guardado de audición si tu frontend hace POST sin token
                 .csrf(csrf -> csrf
                 .ignoringRequestMatchers("/api/chat", "/audiciones/guardar")
                 )
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/img/**", "/api/chat",
                         "/fonts/**", "/webjars/**", "/logo/**", "/uploads/**",
-                        "/", "/inicio/listado", "/calendario/listado",
+                        "/", "/inicio/listado", "/secciones/Calendariolistado",
                         "/galeria/listado", "/contacto/listado",
                         "/audiciones/listado", "/audiciones/guardar", "/login", "/acceso_denegado"
                 ).permitAll()
